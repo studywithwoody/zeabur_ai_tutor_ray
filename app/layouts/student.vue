@@ -83,6 +83,11 @@ const closeDrawer = () => {
               }}</NuxtLink>
             </li>
             <li>
+              <NuxtLink :to="localePath('/student/knowledge-graph')">{{
+                $t("kg.nav")
+              }}</NuxtLink>
+            </li>
+            <li>
               <NuxtLink :to="localePath('/student/favorites')">{{
                 $t("student.layout.favorites")
               }}</NuxtLink>
@@ -177,6 +182,13 @@ const closeDrawer = () => {
             :to="localePath('/student/problems')"
             @click="closeDrawer"
             >{{ $t("student.layout.testbank") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/student/knowledge-graph')"
+            @click="closeDrawer"
+            >{{ $t("kg.nav") }}</NuxtLink
           >
         </li>
         <li>

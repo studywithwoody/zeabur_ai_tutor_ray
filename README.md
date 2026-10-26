@@ -261,6 +261,8 @@ pnpm db:import-kg -- --course ap-physics-1
 
 Embeddings use the same variables as problem embeddings (`EMBEDDING_API_KEY` or `OPENAI_API_KEY`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL`, 1536 dimensions). If no key is set, the graph still imports and embeddings are skipped.
 
+Signed-in students and teachers (and admins) can open the graph at `/student/knowledge-graph` and `/teacher/knowledge-graph`. The read API is under `/api/kg` and rejects anonymous users and other roles. Graph libraries are split into a `vendor-graph` chunk so the PWA precache limit still holds.
+
 ---
 
 ## Notes for Contributors

@@ -141,6 +141,13 @@ export default defineNuxtConfig({
             if (id.includes("node_modules/katex") || id.includes("node_modules/marked")) {
               return "vendor-markdown";
             }
+            if (
+              id.includes("node_modules/cytoscape") ||
+              id.includes("node_modules/dagre") ||
+              id.includes("node_modules/fuse.js")
+            ) {
+              return "vendor-graph";
+            }
           },
         },
       },

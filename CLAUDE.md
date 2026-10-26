@@ -14,6 +14,7 @@ pnpm preview                # Preview production build
 pnpm db:generate            # Generate Drizzle migrations from schema changes
 pnpm db:migrate             # Apply migrations to the database
 pnpm db:studio              # Open Drizzle Studio (database GUI)
+pnpm db:import-kg           # Upsert data/courses knowledge graphs + embeddings
 docker compose up -d        # Start local PostgreSQL
 ```
 
@@ -67,6 +68,7 @@ All tables are in `db/schema.ts`:
 - **Calendar**: `personalEvents`
 - **Role flow**: `roleRequests`, `pendingParent`, `parentStudents`
 - **AI**: `chatHistory` (jsonb `messages` array)
+- **Knowledge graph**: `kgCourses`, `kgUnits`, `kgConcepts` (id `course:slug`, `isActive` instead of hard delete, 1536-d embedding), `kgEdges`, `problemConcepts`. Course JSON + gap reports live in `data/courses/`. Import with `pnpm db:import-kg` (`scripts/import-knowledge-graph.ts`). `kg_courses.subject` matches `problems.subject` case- and space-insensitively (`AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`).
 
 ### i18n
 
@@ -112,3 +114,4 @@ Required in `.env` or `.env.local` (`.env.local` takes precedence):
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_DOMAIN`
 - `CLASS_MATERIALS_R2_*` — same set for the class materials bucket
 - `NUXT_PUBLIC_BASE_URL` — app base URL (used by auth server, auth client SSR, email templates)
+- `EMBEDDING_API_KEY` / `EMBEDDING_BASE_URL` / `EMBEDDING_MODEL` — problem and knowledge-graph embeddings (key falls back to `OPENAI_API_KEY`; model default `text-embedding-3-small`, 1536 dims)

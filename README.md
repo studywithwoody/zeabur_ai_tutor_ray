@@ -146,6 +146,7 @@ pnpm start        # Start built server
 pnpm db:generate  # Generate Drizzle migrations
 pnpm db:migrate   # Apply migrations
 pnpm db:studio    # Open Drizzle Studio
+pnpm db:import-kg # Upsert lecture knowledge graphs + concept embeddings
 ```
 
 ---
@@ -240,6 +241,25 @@ The unified table is defined in `db/schema.ts`. After changing its schema, gener
 pnpm db:generate
 pnpm db:migrate
 ```
+
+---
+
+## Lecture knowledge graph
+
+Course graphs live in `data/courses/<id>.json` with an optional `data/courses/<id>.gaps.md` gap report. The import is idempotent: concepts are upserted and missing ones are deactivated (`is_active = false`) rather than deleted. A course's edges are replaced. Re-running the script refreshes embeddings only when the concept text changed.
+
+`kg_courses.subject` is the subject name teachers type on a problem: `AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`. Matching ignores case and extra spaces.
+
+```bash
+docker compose up -d db
+pnpm db:migrate
+pnpm db:import-kg                  # upsert + embeddings
+pnpm db:import-kg -- --dry-run     # parse and report, no writes
+pnpm db:import-kg -- --skip-embeddings
+pnpm db:import-kg -- --course ap-physics-1
+```
+
+Embeddings use the same variables as problem embeddings (`EMBEDDING_API_KEY` or `OPENAI_API_KEY`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL`, 1536 dimensions). If no key is set, the graph still imports and embeddings are skipped.
 
 ---
 

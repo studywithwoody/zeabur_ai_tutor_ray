@@ -127,6 +127,13 @@
       "when": 1782532472581,
       "tag": "0017_mature_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792998000115,
+      "tag": "0018_woozy_rictor",
+      "breakpoints": true
     }
   ]
 }

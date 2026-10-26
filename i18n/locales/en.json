@@ -735,6 +735,23 @@
       "no_problems_found": "No problems found matching your criteria.",
       "confirm_delete": "Are you sure you want to delete this problem?",
       "delete_error": "Failed to delete problem",
+      "concepts": {
+        "label": "Knowledge points",
+        "search": "Search a concept, law, equation, or skill",
+        "suggest": "AI suggest",
+        "suggesting": "Suggesting...",
+        "confirm": "Confirm",
+        "primary": "Primary concept",
+        "course": "Lecture graph: {course}",
+        "no_course": "No lecture graph matches this subject.",
+        "need_subject": "Enter a subject that matches a lecture graph first.",
+        "no_suggestions": "No nearby knowledge points. Save the problem and try again after embeddings exist.",
+        "embedding_unavailable": "The embedding service is unavailable, so suggestions could not be generated.",
+        "suggest_failed": "Could not load suggestions.",
+        "auto_tag": "Auto-tag knowledge points",
+        "auto_tag_result": "Checked {examined} problems, added {inserted} unconfirmed tags, skipped {skipped}.",
+        "auto_tag_failed": "Auto-tag failed."
+      },
       "create": {
         "title": "Create New Problem",
         "success": "Problem created successfully!",

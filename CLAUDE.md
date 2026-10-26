@@ -68,7 +68,7 @@ All tables are in `db/schema.ts`:
 - **Calendar**: `personalEvents`
 - **Role flow**: `roleRequests`, `pendingParent`, `parentStudents`
 - **AI**: `chatHistory` (jsonb `messages` array)
-- **Knowledge graph**: `kgCourses`, `kgUnits`, `kgConcepts` (id `course:slug`, `isActive` instead of hard delete, 1536-d embedding), `kgEdges`, `problemConcepts`. Course JSON + gap reports live in `data/courses/`. Import with `pnpm db:import-kg` (`scripts/import-knowledge-graph.ts`). `kg_courses.subject` matches `problems.subject` case- and space-insensitively (`AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`).
+- **Knowledge graph**: `kgCourses`, `kgUnits`, `kgConcepts` (id `course:slug`, `isActive` instead of hard delete, 1536-d embedding), `kgEdges`, `problemConcepts`. Course JSON + gap reports live in `data/courses/`. Import with `pnpm db:import-kg` (`scripts/import-knowledge-graph.ts`). `kg_courses.subject` matches `problems.subject` case- and space-insensitively (`AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`). Read API: `server/api/kg/` (student, teacher, or admin only). Pages: `app/pages/student/knowledge-graph.vue`, `app/pages/teacher/knowledge-graph.vue`. UI components: `app/components/kg/`. Teacher tagging: `server/utils/kg-tagging.ts` and `server/api/teacher/problems/[id]/concepts`. Confirmed labels are merged into `problems.hashtags`.
 
 ### i18n
 

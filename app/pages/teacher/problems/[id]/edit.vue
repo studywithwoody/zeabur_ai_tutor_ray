@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TeacherProblemForm from "~/components/teacher/ProblemForm.vue";
 import TeacherProblemPreview from "~/components/teacher/ProblemPreview.vue";
+import type { PickedConcept } from "../../../../../lib/kg/picked-concept";
 
 definePageMeta({
   layout: "teacher",
@@ -29,6 +30,7 @@ interface ProblemData {
   imageFile: File | null;
   imagePreviewUrl: string | null;
   hashtags: string[];
+  concepts: PickedConcept[];
 }
 
 interface FetchedProblem {
@@ -61,6 +63,7 @@ const formData = ref<ProblemData>({
   imageFile: null,
   imagePreviewUrl: null,
   hashtags: [],
+  concepts: [],
 });
 
 const isUploading = ref(false);
@@ -96,6 +99,7 @@ watchEffect(() => {
       imageFile: null,
       imagePreviewUrl: problem.value.imageUrl || null,
       hashtags: problem.value.hashtags || [],
+      concepts: formData.value.concepts,
     };
   }
 });
@@ -144,6 +148,11 @@ const updateProblem = async () => {
       },
     });
 
+    await $fetch(`/api/teacher/problems/${problemId}/concepts`, {
+      method: "PUT",
+      body: { concepts: formData.value.concepts },
+    });
+
     alert(useNuxtApp().$i18n.t("teacher.problems.edit.success"));
     navigateTo(localePath("/teacher/problems"));
   } catch (error: any) {
@@ -175,6 +184,7 @@ const handleCancel = () => {
         <TeacherProblemForm
           v-model="formData"
           :is-uploading="isUploading"
+          :problem-id="problemId"
           :submit-label="$t('teacher.problems.edit.submit')"
           @submit="updateProblem"
           @cancel="handleCancel"

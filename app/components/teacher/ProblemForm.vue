@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { PickedConcept } from "../../../lib/kg/picked-concept";
+
 interface Choice {
   text: string;
   isCorrect: boolean;
@@ -18,6 +20,7 @@ interface ProblemData {
   imageFile: File | null;
   imagePreviewUrl: string | null;
   hashtags: string[];
+  concepts: PickedConcept[];
 }
 
 import VisionTool from "./VisionTool.vue";
@@ -28,6 +31,7 @@ const props = defineProps<{
   modelValue: ProblemData;
   isUploading: boolean;
   submitLabel: string;
+  problemId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -303,6 +307,16 @@ const handleSubmit = () => {
         </div>
       </div>
     </div>
+
+    <TeacherConceptPicker
+      :model-value="modelValue.concepts || []"
+      :subject="modelValue.subject"
+      :problem-id="problemId"
+      :title="modelValue.title"
+      :content="modelValue.content"
+      :explanation="modelValue.explanation"
+      @update:model-value="updateField('concepts', $event)"
+    />
 
     <div class="form-control">
       <label class="label mb-2">{{

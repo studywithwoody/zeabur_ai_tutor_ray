@@ -263,6 +263,8 @@ Embeddings use the same variables as problem embeddings (`EMBEDDING_API_KEY` or 
 
 Signed-in students and teachers (and admins) can open the graph at `/student/knowledge-graph` and `/teacher/knowledge-graph`. The read API is under `/api/kg` and rejects anonymous users and other roles. Graph libraries are split into a `vendor-graph` chunk so the PWA precache limit still holds.
 
+Teachers tag a problem with concepts from the course whose subject matches `problems.subject`. Confirming a tag merges that concept label into `problems.hashtags` and keeps tags that are not concept labels, then refreshes the problem embedding. `POST /api/teacher/kg/auto-tag` writes unconfirmed `ai` rows and does not overwrite an existing pair.
+
 ---
 
 ## Notes for Contributors

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TeacherProblemForm from "~/components/teacher/ProblemForm.vue";
 import TeacherProblemPreview from "~/components/teacher/ProblemPreview.vue";
+import type { PickedConcept } from "../../../../lib/kg/picked-concept";
 
 definePageMeta({
   layout: "teacher",
@@ -27,6 +28,7 @@ interface ProblemData {
   imageFile: File | null;
   imagePreviewUrl: string | null;
   hashtags: string[];
+  concepts: PickedConcept[];
 }
 
 interface Testbank {
@@ -57,6 +59,7 @@ const formData = ref<ProblemData>({
   imageFile: null,
   imagePreviewUrl: null,
   hashtags: [],
+  concepts: [],
 });
 
 const isUploading = ref(false);
@@ -102,8 +105,7 @@ const submitProblem = async () => {
       imageUrl = uploadedUrl;
     }
 
-    // Create problem
-    await $fetch("/api/teacher/problems", {
+    const created = await $fetch<{ id: string }>("/api/teacher/problems", {
       method: "POST",
       body: {
         title: formData.value.title,
@@ -124,6 +126,13 @@ const submitProblem = async () => {
         testbankIds: selectedTestbankIds.value,
       },
     });
+
+    if (formData.value.concepts.length > 0) {
+      await $fetch(`/api/teacher/problems/${created.id}/concepts`, {
+        method: "PUT",
+        body: { concepts: formData.value.concepts },
+      });
+    }
 
     alert(useNuxtApp().$i18n.t("teacher.problems.create.success"));
     navigateTo(localePath("/teacher/problems"));

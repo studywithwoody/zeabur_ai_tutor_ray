@@ -735,6 +735,23 @@
       "no_problems_found": "沒有找到符合條件的題目。",
       "confirm_delete": "您確定要刪除此題目嗎？",
       "delete_error": "刪除題目失敗",
+      "concepts": {
+        "label": "知識點",
+        "search": "搜尋概念、定律、公式或技能",
+        "suggest": "AI 建議",
+        "suggesting": "建議中...",
+        "confirm": "確認",
+        "primary": "主要知識點",
+        "course": "講義圖譜：{course}",
+        "no_course": "這個科目沒有對應的講義圖譜。",
+        "need_subject": "請先填寫與講義圖譜相符的科目。",
+        "no_suggestions": "找不到相近的知識點。請先儲存題目，等向量產生後再試。",
+        "embedding_unavailable": "向量服務目前無法使用，所以沒有產生建議。",
+        "suggest_failed": "無法載入建議。",
+        "auto_tag": "自動標記知識點",
+        "auto_tag_result": "已檢查 {examined} 題，新增 {inserted} 個未確認標記，略過 {skipped} 題。",
+        "auto_tag_failed": "自動標記失敗。"
+      },
       "create": {
         "title": "建立新題目",
         "success": "題目建立成功！",

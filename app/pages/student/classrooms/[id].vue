@@ -46,6 +46,16 @@ const { data: posts } = await useFetch(
         </div>
       </div>
 
+      <!-- Teacher Profile -->
+      <div v-if="classroom.teacher" class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+          <h2 class="card-title mb-4">
+            {{ $t("student.classrooms.teacher", "Teacher") }}
+          </h2>
+          <TeacherProfileCard :teacher="classroom.teacher" />
+        </div>
+      </div>
+
       <!-- Students List (Read Only) -->
       <div class="card bg-base-100 shadow-xl border border-base-200">
         <div class="card-body">
@@ -180,6 +190,19 @@ const { data: posts } = await useFetch(
             {{ $t("student.classrooms.materials", "Class Materials") }}
           </h2>
           <ClassroomMaterialsList
+            :classroom-id="classroomId"
+            user-type="student"
+          />
+        </div>
+      </div>
+
+      <!-- Shared Testbanks Section -->
+      <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+          <h2 class="card-title mb-4">
+            {{ $t("components.shared_testbanks.title") }}
+          </h2>
+          <ClassroomTestbanksList
             :classroom-id="classroomId"
             user-type="student"
           />

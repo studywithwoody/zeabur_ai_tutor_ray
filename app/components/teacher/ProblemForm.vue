@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { PickedConcept } from "../../../lib/kg/picked-concept";
+
 interface Choice {
   text: string;
   isCorrect: boolean;
@@ -11,10 +13,14 @@ interface ProblemData {
   correctAnswer: string;
   explanation: string;
   difficulty: "easy" | "medium" | "hard";
+  subject: string;
+  chapter: string;
+  grade: string;
   source: string;
   imageFile: File | null;
   imagePreviewUrl: string | null;
   hashtags: string[];
+  concepts: PickedConcept[];
 }
 
 import VisionTool from "./VisionTool.vue";
@@ -25,6 +31,7 @@ const props = defineProps<{
   modelValue: ProblemData;
   isUploading: boolean;
   submitLabel: string;
+  problemId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -161,7 +168,52 @@ const handleSubmit = () => {
 
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label">{{
+          $t("teacher.problems.form.subject")
+        }}</label>
+        <input
+          :value="modelValue.subject"
+          @input="
+            updateField('subject', ($event.target as HTMLInputElement).value)
+          "
+          type="text"
+          class="input input-bordered"
+          :placeholder="$t('teacher.problems.form.subject_placeholder')"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label">{{
+          $t("teacher.problems.form.chapter")
+        }}</label>
+        <input
+          :value="modelValue.chapter"
+          @input="
+            updateField('chapter', ($event.target as HTMLInputElement).value)
+          "
+          type="text"
+          class="input input-bordered"
+          :placeholder="$t('teacher.problems.form.chapter_placeholder')"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label">{{
+          $t("teacher.problems.form.grade")
+        }}</label>
+        <input
+          :value="modelValue.grade"
+          @input="
+            updateField('grade', ($event.target as HTMLInputElement).value)
+          "
+          type="text"
+          class="input input-bordered"
+          :placeholder="$t('teacher.problems.form.grade_placeholder')"
+        />
+      </div>
+
       <div class="form-control">
         <label class="label">{{
           $t("teacher.problems.form.difficulty")
@@ -256,12 +308,21 @@ const handleSubmit = () => {
       </div>
     </div>
 
+    <TeacherConceptPicker
+      :model-value="modelValue.concepts || []"
+      :subject="modelValue.subject"
+      :problem-id="problemId"
+      :title="modelValue.title"
+      :content="modelValue.content"
+      :explanation="modelValue.explanation"
+      @update:model-value="updateField('concepts', $event)"
+    />
+
     <div class="form-control">
       <label class="label mb-2">{{
         $t("teacher.problems.form.content")
       }}</label>
       <VisionTool @text-extracted="handleTextExtracted" />
-      <div class="flex gap-2 mb-2">
         <FormatTool
           :current-content="modelValue.content"
           @content-formatted="handleContentFormatted"
@@ -272,7 +333,6 @@ const handleSubmit = () => {
           @options-generated="handleOptionsGenerated"
           class="flex-1"
         />
-      </div>
       <br />
       <textarea
         :value="modelValue.content"

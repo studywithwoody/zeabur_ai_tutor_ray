@@ -1,23 +1,38 @@
 {
   "version": 1,
   "skills": {
+    "ai-sdk": {
+      "source": "vercel/ai",
+      "sourceType": "github",
+      "skillPath": "skills/use-ai-sdk/SKILL.md",
+      "computedHash": "2249889eb47ef0f61c4dba4cf2afe01c1c8dd793bb4c24230347c1ab909bb7dd"
+    },
+    "antfu": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/antfu/SKILL.md",
+      "computedHash": "e6629200b1f033c78150985fb1b1ec2aa848a378c0637f9a850cb33f650bce19"
+    },
     "deep-agents-core": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/deep-agents-core/SKILL.md",
       "computedHash": "8cbf6f61f42b2482472f53a99e23607f16017e1e16ca037409c6c8fcfcbcc395"
     },
     "deep-agents-memory": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/deep-agents-memory/SKILL.md",
       "computedHash": "b7b0facdff17b6f3ad77019e30a697175389e06ec7260780f49d5b3a1d28ad2a"
     },
     "deep-agents-orchestration": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/deep-agents-orchestration/SKILL.md",
       "computedHash": "1570f8d88e1233edc3306d28224604172b016aedba0ced2efa2dd8e38e28ae62"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
     },
     "framework-selection": {
       "source": "langchain-ai/langchain-skills",
@@ -25,21 +40,14 @@
       "skillPath": "config/skills/framework-selection/SKILL.md",
       "computedHash": "4077205bed91c048ba47f0db1bd66930bdbdd04e5195dc3d5b265272c5059cd1"
     },
-    "langchain-architecture": {
-      "source": "wshobson/agents",
-      "sourceType": "github",
-      "computedHash": "0cdd844e5af5d2c47e3faf31ba9b9f1b86a611edecc72e2021688c0b6cce6938"
-    },
     "langchain-dependencies": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/langchain-dependencies/SKILL.md",
       "computedHash": "bab5411cdfbdeaa42544c45791d9d3fc18d4cc193f4a3c5e2f6bd567422bffaf"
     },
     "langchain-fundamentals": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/langchain-fundamentals/SKILL.md",
       "computedHash": "ede1b3210a135e2c7eb5ddb51e0aaf3b78fde07cfd9fbe6efaeb4d6c5db60bd2"
     },
     "langchain-middleware": {
@@ -51,24 +59,16 @@
     "langchain-rag": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/langchain-rag/SKILL.md",
       "computedHash": "545c661f6ed9b54cfe078a438052b2742d6122fc022f69db67d1a01aca4c726c"
-    },
-    "langgraph-docs": {
-      "source": "langchain-ai/deepagents",
-      "sourceType": "github",
-      "computedHash": "00bb7db4700630b80a3526c430059ee03a0dade284756b114f2e36f99bf87776"
     },
     "langgraph-fundamentals": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/langgraph-fundamentals/SKILL.md",
       "computedHash": "d754005c69632037ca79c4daa8177b03e5a0f17f40cde3b0f532b33a8df88ded"
     },
     "langgraph-human-in-the-loop": {
       "source": "langchain-ai/langchain-skills",
       "sourceType": "github",
-      "skillPath": "config/skills/langgraph-human-in-the-loop/SKILL.md",
       "computedHash": "0e81f1ef881b4c82bdcb5bece6309558f9e53681022f8347f869abc403b48637"
     },
     "langgraph-persistence": {
@@ -77,10 +77,82 @@
       "skillPath": "config/skills/langgraph-persistence/SKILL.md",
       "computedHash": "1fd77ec0740a3b5318818cf4ea44214c41fae81a7dbd946111f5266aabf0c5c7"
     },
-    "supabase-postgres-best-practices": {
-      "source": "supabase/agent-skills",
+    "manage-mcp": {
+      "source": "mcp-toolkit.nuxt.dev",
+      "sourceType": "well-known",
+      "computedHash": "8425398b750eeb8a61c976d5a95f47425fbdf521c0d09a619fc626bbdd627b06"
+    },
+    "nuxt": {
+      "source": "antfu/skills",
       "sourceType": "github",
-      "computedHash": "9c87c315aed143ee3b34bec8117100f5035e0df09e6b23e1ecc772cff434c9ad"
+      "skillPath": "skills/nuxt/SKILL.md",
+      "computedHash": "9e8237ec92083db9a6f4c77d5e5bf4b1d9873d670671235bc75455ee1ca39c74"
+    },
+    "openai-docs": {
+      "source": "openai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/openai-docs/SKILL.md",
+      "computedHash": "0436b5a4e330b85cc5468c772b49f185daa6cd7a8d2b5ff9f6c97df10c5ab373"
+    },
+    "pnpm": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/pnpm/SKILL.md",
+      "computedHash": "318f9fca2441a3e06fedc336e195dd18be5dbe901064e4fa71b76b40b096ab3a"
+    },
+    "unocss": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/unocss/SKILL.md",
+      "computedHash": "4b7a9f7b89994d5aef70b9d55cb7f65d6e80cea437d5786cd33bb5cf7231c7c4"
+    },
+    "vite": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vite/SKILL.md",
+      "computedHash": "867ff66238f3152e9c494339ad08dc432dd0df5bcf5cc7a00b61a72b580eb908"
+    },
+    "vitest": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest/SKILL.md",
+      "computedHash": "669c7275f7e1379b06b2bcfa593603aead4c983b951c7e8edbc09640aa38d0a1"
+    },
+    "vue": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue/SKILL.md",
+      "computedHash": "9c241141e07e836e4f0537c63e8f929fba3767c2997250be38e699f19b75e3f2"
+    },
+    "vue-best-practices": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-best-practices/SKILL.md",
+      "computedHash": "d7d22c8cb343583c3904692c4d1d7b50382945e433e4f6e053f4aabb9846cbc3"
+    },
+    "vue-router-best-practices": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-router-best-practices/SKILL.md",
+      "computedHash": "e27384f4e6c8c70a612e76b74e4387efb8e291a6a1e3aa14a69102a4ce4b4654"
+    },
+    "vue-testing-best-practices": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-testing-best-practices/SKILL.md",
+      "computedHash": "18c7d8f42f350f927e37de055e34c97b8cfb9f79c12cf942f7f3d2a0821057b5"
+    },
+    "vueuse-functions": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vueuse-functions/SKILL.md",
+      "computedHash": "fedfc78f035a88fe3e9d823f44725fe8981486c55b966c17fbd0d7c28339e49a"
+    },
+    "web-design-guidelines": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "65a2e7d85753383ae0f88df15475d58b9e39723e9c4bb6891421d6144a85f79c"
     },
     "zeabur-auth": {
       "source": "zeabur/zeabur-claude-plugin",

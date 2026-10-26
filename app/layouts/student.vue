@@ -73,13 +73,28 @@ const closeDrawer = () => {
               </div>
             </li>
             <li>
+              <NuxtLink :to="localePath('/student/testbanks')">{{
+                $t("student.layout.testbanks")
+              }}</NuxtLink>
+            </li>
+            <li>
               <NuxtLink :to="localePath('/student/problems')">{{
                 $t("student.layout.testbank")
               }}</NuxtLink>
             </li>
             <li>
+              <NuxtLink :to="localePath('/student/knowledge-graph')">{{
+                $t("kg.nav")
+              }}</NuxtLink>
+            </li>
+            <li>
               <NuxtLink :to="localePath('/student/favorites')">{{
                 $t("student.layout.favorites")
+              }}</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink :to="localePath('/student/problem-lists')">{{
+                $t("student.layout.problem_lists")
               }}</NuxtLink>
             </li>
             <li>
@@ -103,7 +118,17 @@ const closeDrawer = () => {
               }}</NuxtLink>
             </li>
             <li>
+              <NuxtLink :to="localePath('/student/reservation')">{{
+                $t("student.layout.teachers")
+              }}</NuxtLink>
+            </li>
+            <li>
               <NuxtLink :to="localePath('/student/ai-chat')">AI Chat</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink :to="localePath('/student/profile')">{{
+                $t("student.layout.profile")
+              }}</NuxtLink>
             </li>
             <li>
               <button
@@ -147,9 +172,30 @@ const closeDrawer = () => {
         </li>
         <li>
           <NuxtLink
+            :to="localePath('/student/testbanks')"
+            @click="closeDrawer"
+            >{{ $t("student.layout.testbanks") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
             :to="localePath('/student/problems')"
             @click="closeDrawer"
             >{{ $t("student.layout.testbank") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/student/knowledge-graph')"
+            @click="closeDrawer"
+            >{{ $t("kg.nav") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/student/problem-lists')"
+            @click="closeDrawer"
+            >{{ $t("student.layout.problem_lists") }}</NuxtLink
           >
         </li>
         <li>
@@ -167,9 +213,29 @@ const closeDrawer = () => {
           >
         </li>
         <li>
+          <NuxtLink
+            :to="localePath('/student/reservation')"
+            @click="closeDrawer"
+            >{{ $t("student.layout.teachers") }}</NuxtLink
+          >
+        </li>
+        <li>
           <NuxtLink :to="localePath('/student/ai-chat')" @click="closeDrawer"
             >AI Chat</NuxtLink
           >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/student/profile')"
+            @click="closeDrawer"
+            >{{ $t("student.layout.profile") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <LangSwitcher />
+        </li>
+        <li>
+          <ThemeSwitcher />
         </li>
         <li class="mt-auto">
           <button @click="handleLogout" class="btn btn-secondary btn-outline">

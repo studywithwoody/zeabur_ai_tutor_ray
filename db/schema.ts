@@ -8,7 +8,12 @@ import {
   foreignKey,
   interval,
   uniqueIndex,
+  index,
+  vector,
+  uuid,
+  check,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -63,22 +68,37 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at"),
 });
 
-export const problems = pgTable("problems", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  choices: jsonb("choices").notNull(), // Storing as JSON
-  correctAnswer: text("correct_answer").notNull(),
-  explanation: text("explanation"),
-  difficulty: text("difficulty"),
-  source: text("source"), // Added per user request
-  imageUrl: text("image_url"),
-  hashtags: jsonb("hashtags").$type<string[]>().default([]), // Added hashtags column
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const problems = pgTable(
+  "problems",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    title: text("title").notNull(),
+    content: text("content").notNull(),
+    choices: jsonb("choices").notNull(),
+    correctAnswer: text("correct_answer").notNull(),
+    explanation: text("explanation"),
+    difficulty: text("difficulty"),
+    subject: text("subject"),
+    chapter: text("chapter"),
+    grade: text("grade"),
+    source: text("source"),
+    imageUrl: text("image_url"),
+    hashtags: jsonb("hashtags").$type<string[]>().default([]),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    aiGenerated: boolean("ai_generated").default(false),
+    createdBy: text("created_by").references(() => user.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    embeddingIdx: index("problems_embedding_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops")
+    ),
+  })
+);
 
 export const classrooms = pgTable("classrooms", {
   id: text("id")
@@ -241,17 +261,36 @@ export const roleRequests = pgTable("role_requests", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const parentStudents = pgTable("parent_students", {
+export const parentStudents = pgTable(
+  "parent_students",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    parentId: text("parent_id")
+      .notNull()
+      .references(() => user.id),
+    studentId: text("student_id")
+      .notNull()
+      .references(() => user.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("parent_students_parent_student_unique").on(t.parentId, t.studentId)]
+);
+
+export const chatProjects = pgTable("chat_projects", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  parentId: text("parent_id")
+  userId: text("user_id")
     .notNull()
     .references(() => user.id),
-  studentId: text("student_id")
-    .notNull()
-    .references(() => user.id),
+  role: text("role").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  systemPrompt: text("system_prompt"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const chatHistory = pgTable("chat_history", {
@@ -261,9 +300,30 @@ export const chatHistory = pgTable("chat_history", {
   studentId: text("student_id")
     .notNull()
     .references(() => user.id),
+  projectId: text("project_id").references(() => chatProjects.id, {
+    onDelete: "set null",
+  }),
   title: text("title"),
   messages: jsonb("messages")
-    .$type<{ role: "user" | "assistant"; content: string }[]>()
+    .$type<import("ai").UIMessage[]>()
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const teacherChatHistory = pgTable("teacher_chat_history", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  teacherId: text("teacher_id")
+    .notNull()
+    .references(() => user.id),
+  projectId: text("project_id").references(() => chatProjects.id, {
+    onDelete: "set null",
+  }),
+  title: text("title"),
+  messages: jsonb("messages")
+    .$type<import("ai").UIMessage[]>()
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -414,4 +474,338 @@ export const postsTemplate = pgTable(
       ),
     };
   }
+);
+
+export type AiInteractionAttachment = {
+  url: string;
+  mediaType: string;
+  filename?: string;
+};
+
+export const aiInteractionLogs = pgTable(
+  "ai_interaction_logs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventKey: text("event_key").notNull(),
+    chatId: text("chat_id").notNull(),
+    messageId: text("message_id"),
+    toolCallId: text("tool_call_id"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id),
+    userRole: text("user_role").notNull(),
+    eventType: text("event_type").notNull(),
+    status: text("status").notNull().default("completed"),
+    content: text("content"),
+    attachments: jsonb("attachments").$type<AiInteractionAttachment[]>(),
+    toolName: text("tool_name"),
+    toolInput: jsonb("tool_input").$type<unknown>(),
+    toolOutput: jsonb("tool_output").$type<unknown>(),
+    finishReason: text("finish_reason"),
+    durationMs: integer("duration_ms"),
+    error: text("error"),
+    classroomId: text("classroom_id"),
+    projectId: text("project_id"),
+    stepNumber: integer("step_number"),
+    modelId: text("model_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    eventKeyUnique: uniqueIndex("ai_interaction_logs_event_key_unique").on(
+      table.eventKey,
+    ),
+    chatCreatedIndex: index("ai_interaction_logs_chat_created_idx").on(
+      table.chatId,
+      table.createdAt,
+    ),
+    createdIndex: index("ai_interaction_logs_created_idx").on(table.createdAt),
+  }),
+);
+
+export const teacherAvailability = pgTable("teacher_availability", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  teacherId: text("teacher_id")
+    .notNull()
+    .references(() => user.id),
+  description: text("description"),
+  startTime: timestamp("start_time", { withTimezone: true }).notNull(),
+  endTime: timestamp("end_time", { withTimezone: true }).notNull(),
+  isAvailable: boolean("is_available").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const bookings = pgTable("bookings", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  availabilityId: text("availability_id")
+    .notNull()
+    .references(() => teacherAvailability.id),
+  studentId: text("student_id")
+    .notNull()
+    .references(() => user.id),
+  teacherId: text("teacher_id")
+    .notNull()
+    .references(() => user.id),
+  status: text("status").notNull().default("pending"),
+  studentNote: text("student_note"),
+  teacherNote: text("teacher_note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const testbanks = pgTable("testbanks", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  description: text("description"),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => user.id),
+  isPublic: boolean("is_public").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const testbankProblems = pgTable(
+  "testbank_problems",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    testbankId: text("testbank_id")
+      .notNull()
+      .references(() => testbanks.id, { onDelete: "cascade" }),
+    problemId: text("problem_id")
+      .notNull()
+      .references(() => problems.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    testbankProblemUnique: uniqueIndex("testbank_problems_unique").on(
+      table.testbankId,
+      table.problemId
+    ),
+  })
+);
+
+export const testbankClassrooms = pgTable(
+  "testbank_classrooms",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    testbankId: text("testbank_id")
+      .notNull()
+      .references(() => testbanks.id, { onDelete: "cascade" }),
+    classroomId: text("classroom_id")
+      .notNull()
+      .references(() => classrooms.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    testbankClassroomUnique: uniqueIndex("testbank_classrooms_unique").on(
+      table.testbankId,
+      table.classroomId
+    ),
+  })
+);
+
+export const teacherProfiles = pgTable("teacher_profiles", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id),
+  gender: text("gender"),
+  bio: text("bio"),
+  interests: text("interests"),
+  teachingAreas: text("teaching_areas"),
+  teachingExperience: text("teaching_experience"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const studentProfiles = pgTable("student_profiles", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id),
+  gender: text("gender"),
+  bio: text("bio"),
+  interests: text("interests"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const parentProfiles = pgTable("parent_profiles", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id),
+  gender: text("gender"),
+  bio: text("bio"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const problemLists = pgTable("problem_lists", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id").notNull().references(() => user.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  shareToken: text("share_token").unique(), // null = sharing disabled
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const problemListItems = pgTable(
+  "problem_list_items",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    listId: text("list_id").notNull().references(() => problemLists.id, { onDelete: "cascade" }),
+    problemId: text("problem_id").notNull().references(() => problems.id, { onDelete: "cascade" }),
+    addedAt: timestamp("added_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    listProblemUnique: uniqueIndex("problem_list_items_unique").on(t.listId, t.problemId),
+  })
+);
+
+export const kgCourses = pgTable(
+  "kg_courses",
+  {
+    id: text("id").primaryKey(),
+    title: text("title").notNull(),
+    // Exact teacher-facing subject, matched to problems.subject case- and space-insensitively.
+    subject: text("subject").notNull(),
+    sourceFolderUrl: text("source_folder_url"),
+    gapReport: text("gap_report"),
+    generatedAt: timestamp("generated_at", { withTimezone: true }),
+    // relations, basis, counts, notes, author — returned with the graph payload.
+    meta: jsonb("meta").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    subjectIdx: index("kg_courses_subject_idx").on(t.subject),
+  })
+);
+
+export const kgUnits = pgTable(
+  "kg_units",
+  {
+    // `${courseId}:${unit}` e.g. ap-physics-1:ch01
+    id: text("id").primaryKey(),
+    courseId: text("course_id")
+      .notNull()
+      .references(() => kgCourses.id),
+    number: integer("number"),
+    name: text("name").notNull(),
+    chapter: text("chapter"),
+    // Original unit node id from the lecture graph, e.g. unit-ch01.
+    slug: text("slug").notNull(),
+    files: jsonb("files").$type<Record<string, unknown>[]>().default([]),
+  },
+  (t) => ({
+    courseIdx: index("kg_units_course_id_idx").on(t.courseId),
+    courseSlugUnique: uniqueIndex("kg_units_course_slug_unique").on(t.courseId, t.slug),
+  })
+);
+
+export const kgConcepts = pgTable(
+  "kg_concepts",
+  {
+    // `${courseId}:${slug}` — stable, unique across courses. Never hard-deleted.
+    id: text("id").primaryKey(),
+    courseId: text("course_id")
+      .notNull()
+      .references(() => kgCourses.id),
+    unitId: text("unit_id").references(() => kgUnits.id),
+    slug: text("slug").notNull(),
+    label: text("label").notNull(),
+    // concept | law | equation | skill, plus unit anchors so part_of edges can use FKs.
+    type: text("type").notNull(),
+    definition: text("definition"),
+    definitionNote: text("definition_note"),
+    slideExcerpt: text("slide_excerpt"),
+    equations: jsonb("equations").$type<string[]>().default([]),
+    equationsVerified: boolean("equations_verified"),
+    sources: jsonb("sources").$type<Record<string, unknown>[]>().default([]),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    embeddingSourceHash: text("embedding_source_hash"),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    courseSlugUnique: uniqueIndex("kg_concepts_course_slug_unique").on(t.courseId, t.slug),
+    courseIdx: index("kg_concepts_course_id_idx").on(t.courseId),
+    unitIdx: index("kg_concepts_unit_id_idx").on(t.unitId),
+    embeddingIdx: index("kg_concepts_embedding_idx").using(
+      "hnsw",
+      t.embedding.op("vector_cosine_ops")
+    ),
+  })
+);
+
+export const kgEdges = pgTable(
+  "kg_edges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    courseId: text("course_id")
+      .notNull()
+      .references(() => kgCourses.id),
+    sourceId: text("source_id")
+      .notNull()
+      .references(() => kgConcepts.id),
+    targetId: text("target_id")
+      .notNull()
+      .references(() => kgConcepts.id),
+    relation: text("relation").notNull(),
+    basis: text("basis").notNull(),
+    note: text("note"),
+    evidence: jsonb("evidence").$type<Record<string, unknown> | null>(),
+    crossUnit: boolean("cross_unit").default(false).notNull(),
+  },
+  (t) => ({
+    endpointsRelationUnique: uniqueIndex("kg_edges_source_target_relation_unique").on(
+      t.sourceId,
+      t.targetId,
+      t.relation
+    ),
+    courseIdx: index("kg_edges_course_id_idx").on(t.courseId),
+    sourceIdx: index("kg_edges_source_id_idx").on(t.sourceId),
+    targetIdx: index("kg_edges_target_id_idx").on(t.targetId),
+  })
+);
+
+export const problemConcepts = pgTable(
+  "problem_concepts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    problemId: text("problem_id")
+      .notNull()
+      .references(() => problems.id, { onDelete: "cascade" }),
+    conceptId: text("concept_id")
+      .notNull()
+      .references(() => kgConcepts.id),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    taggedBy: text("tagged_by").notNull(),
+    confirmed: boolean("confirmed").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    problemConceptUnique: uniqueIndex("problem_concepts_problem_id_concept_id_unique").on(
+      t.problemId,
+      t.conceptId
+    ),
+    conceptIdx: index("problem_concepts_concept_id_idx").on(t.conceptId),
+    problemIdx: index("problem_concepts_problem_id_idx").on(t.problemId),
+    taggedByCheck: check(
+      "problem_concepts_tagged_by_check",
+      sql`${t.taggedBy} in ('manual', 'ai')`
+    ),
+  })
 );

@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import EventCalendar from "~/components/common/EventCalendar.vue";
-
 definePageMeta({
   layout: "student",
 });
+
+const { t } = useI18n();
 const localePath = useLocalePath();
 </script>
 
 <template>
   <div class="p-4 md:p-6">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">{{ $t("student.dashboard.title") }}</h1>
+      <h1 class="text-2xl font-bold">{{ t("student.dashboard.title") }}</h1>
       <NuxtLink
         :to="localePath('/student/calendar-help')"
         class="btn btn-circle btn-ghost"
-        :title="$t('student.dashboard.calendar_help')"
+        :title="t('student.dashboard.calendar_help')"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -33,6 +33,6 @@ const localePath = useLocalePath();
       </NuxtLink>
     </div>
 
-    <EventCalendar />
+    <LazyCommonEventCalendar />
   </div>
 </template>

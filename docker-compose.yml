@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-tutor-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/ai_tutor
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-replace-with-a-strong-random-secret}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      NUXT_BASE_URL: ${NUXT_BASE_URL:-http://localhost:3000}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GOOGLE_VISION_API_KEY: ${GOOGLE_VISION_API_KEY:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_PUBLIC_DOMAIN: ${R2_PUBLIC_DOMAIN:-}
+      CLASS_MATERIALS_R2_ACCOUNT_ID: ${CLASS_MATERIALS_R2_ACCOUNT_ID:-}
+      CLASS_MATERIALS_R2_ACCESS_KEY_ID: ${CLASS_MATERIALS_R2_ACCESS_KEY_ID:-}
+      CLASS_MATERIALS_R2_SECRET_ACCESS_KEY: ${CLASS_MATERIALS_R2_SECRET_ACCESS_KEY:-}
+      CLASS_MATERIALS_R2_BUCKET_NAME: ${CLASS_MATERIALS_R2_BUCKET_NAME:-}
+      CLASS_MATERIALS_R2_PUBLIC_DOMAIN: ${CLASS_MATERIALS_R2_PUBLIC_DOMAIN:-}
+      NUXT_MCP_STUDENT_GATEWAY_TOKEN: ${NUXT_MCP_STUDENT_GATEWAY_TOKEN:-}
+      NUXT_MCP_TEACHER_GATEWAY_TOKEN: ${NUXT_MCP_TEACHER_GATEWAY_TOKEN:-}
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:3000/').then(response=>{if(!response.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: ai-tutor-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ai_tutor
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ai_tutor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

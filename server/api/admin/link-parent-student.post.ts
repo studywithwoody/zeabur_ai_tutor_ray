@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { pendingParent, parentStudents } from "../../../db/schema";
 import { db } from "../../../db";
 import { requireAuthSession } from "../../../server/utils/auth";
@@ -25,15 +25,33 @@ export default defineEventHandler(async (event) => {
   try {
     await db.transaction(async (tx) => {
       // 1. Get parentId from pending_parent
-      const pendingRecord = await tx.query.pendingParent.findFirst({
-        where: eq(pendingParent.id, pendingParentId),
-      });
+      const [pendingRecord] = await tx
+        .select()
+        .from(pendingParent)
+        .where(eq(pendingParent.id, pendingParentId))
+        .limit(1);
 
       if (!pendingRecord) {
         throw new Error("Pending parent record not found");
       }
 
-      // 2. Insert into parent_students
+      // 2. Guard against duplicate links
+      const [existing] = await tx
+        .select()
+        .from(parentStudents)
+        .where(
+          and(
+            eq(parentStudents.parentId, pendingRecord.parentId),
+            eq(parentStudents.studentId, studentId)
+          )
+        )
+        .limit(1);
+
+      if (existing) {
+        throw new Error("This parent-student link already exists");
+      }
+
+      // 3. Insert into parent_students
       await tx.insert(parentStudents).values({
         parentId: pendingRecord.parentId,
         studentId: studentId,

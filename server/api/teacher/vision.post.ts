@@ -1,4 +1,12 @@
 export default defineEventHandler(async (event) => {
+  const session = await requireAuthSession(event);
+  if (!session?.user || (session.user.role !== "teacher" && session.user.role !== "admin")) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden",
+    });
+  }
+
   const config = useRuntimeConfig();
   const apiKey = config.googleVisionApiKey || process.env.GOOGLE_VISION_API_KEY;
 
@@ -16,6 +24,14 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       message: "Image data is required",
+    });
+  }
+
+  // ~6.8M chars ≈ 5MB raw image after base64 encoding
+  if (image.length > 6_800_000) {
+    throw createError({
+      statusCode: 413,
+      message: "Image too large (max 5MB)",
     });
   }
 

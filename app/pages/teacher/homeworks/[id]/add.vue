@@ -16,17 +16,22 @@ const { data: homeworkData, refresh: refreshHomework } = await useFetch(
 // Search State
 const searchParams = ref({
   title: "",
+  subject: "",
+  chapter: "",
+  grade: "",
+  difficulty: "",
   source: "",
   hashtag: "",
 });
 
 // Fetch All Problems
-const { data: allProblems, refresh: refreshProblems } = await useFetch(
+const { data: allProblemsResult, refresh: refreshProblems } = await useFetch(
   "/api/problems",
   {
     query: searchParams,
   }
 );
+const allProblems = computed(() => allProblemsResult.value?.data ?? []);
 
 // Staging State
 const stagedProblems = ref<any[]>([]);
@@ -45,6 +50,10 @@ const stagedProblemIds = computed(() => {
 
 const handleSearch = (params: {
   title: string;
+  subject: string;
+  chapter: string;
+  grade: string;
+  difficulty: string;
   source: string;
   hashtag: string;
 }) => {
@@ -122,7 +131,7 @@ const saveChanges = async () => {
 
       <div class="flex-1 overflow-y-auto p-4 bg-base-200/50">
         <div
-          v-if="allProblems"
+          v-if="allProblems.length > 0"
           class="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
         >
           <div
@@ -141,6 +150,21 @@ const saveChanges = async () => {
                     'badge-error': problem.difficulty === 'hard',
                   }"
                   >{{ problem.difficulty }}</span
+                >
+                <span
+                  v-if="problem.subject"
+                  class="badge badge-info badge-outline badge-xs"
+                  >{{ problem.subject }}</span
+                >
+                <span
+                  v-if="problem.chapter"
+                  class="badge badge-ghost badge-xs"
+                  >{{ problem.chapter }}</span
+                >
+                <span
+                  v-if="problem.grade"
+                  class="badge badge-ghost badge-outline badge-xs"
+                  >{{ problem.grade }}</span
                 >
                 <span
                   v-if="problem.source"
@@ -179,7 +203,7 @@ const saveChanges = async () => {
             </div>
           </div>
         </div>
-        <div v-else class="flex justify-center p-8">
+        <div v-if="!allProblemsResult" class="flex justify-center p-8">
           <span class="loading loading-spinner loading-lg"></span>
         </div>
       </div>

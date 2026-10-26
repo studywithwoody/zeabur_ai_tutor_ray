@@ -60,6 +60,11 @@ const closeDrawer = () => {
               }}</NuxtLink>
             </li>
             <li>
+              <NuxtLink :to="localePath('/teacher/knowledge-graph')">{{
+                $t("kg.nav")
+              }}</NuxtLink>
+            </li>
+            <li>
               <NuxtLink :to="localePath('/teacher/classrooms')">{{
                 $t("teacher.layout.classrooms")
               }}</NuxtLink>
@@ -77,6 +82,21 @@ const closeDrawer = () => {
             <li>
               <NuxtLink :to="localePath('/teacher/materials')">{{
                 $t("teacher.layout.materials")
+              }}</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink :to="localePath('/teacher/schedule')">{{
+                $t("teacher.layout.schedule")
+              }}</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink :to="localePath('/teacher/ai-chat')">{{
+                $t("teacher.layout.ai_chat")
+              }}</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink :to="localePath('/teacher/profile')">{{
+                $t("teacher.layout.profile")
               }}</NuxtLink>
             </li>
             <li>
@@ -125,9 +145,23 @@ const closeDrawer = () => {
         </li>
         <li>
           <NuxtLink
+            :to="localePath('/teacher/knowledge-graph')"
+            @click="closeDrawer"
+            >{{ $t("kg.nav") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
             :to="localePath('/teacher/problems/create')"
             @click="closeDrawer"
             >{{ $t("teacher.layout.create_problem") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/teacher/ai-chat')"
+            @click="closeDrawer"
+            >{{ $t("teacher.layout.ai_chat") }}</NuxtLink
           >
         </li>
         <li>
@@ -150,6 +184,26 @@ const closeDrawer = () => {
             @click="closeDrawer"
             >{{ $t("teacher.layout.students") }}</NuxtLink
           >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/teacher/schedule')"
+            @click="closeDrawer"
+            >{{ $t("teacher.layout.schedule") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <NuxtLink
+            :to="localePath('/teacher/profile')"
+            @click="closeDrawer"
+            >{{ $t("teacher.layout.profile") }}</NuxtLink
+          >
+        </li>
+        <li>
+          <LangSwitcher />
+        </li>
+        <li>
+          <ThemeSwitcher />
         </li>
         <li class="mt-auto">
           <button @click="handleLogout" class="btn btn-secondary btn-outline">

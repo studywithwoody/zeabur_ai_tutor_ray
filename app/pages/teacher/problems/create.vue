@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import TeacherProblemForm from "~/components/teacher/ProblemForm.vue";
 import TeacherProblemPreview from "~/components/teacher/ProblemPreview.vue";
+import type { PickedConcept } from "../../../../lib/kg/picked-concept";
 
 definePageMeta({
   layout: "teacher",
 });
 const localePath = useLocalePath();
+const route = useRoute();
 
 interface Choice {
   text: string;
@@ -19,10 +21,23 @@ interface ProblemData {
   correctAnswer: string;
   explanation: string;
   difficulty: "easy" | "medium" | "hard";
+  subject: string;
+  chapter: string;
+  grade: string;
   source: string;
   imageFile: File | null;
   imagePreviewUrl: string | null;
   hashtags: string[];
+  concepts: PickedConcept[];
+}
+
+interface Testbank {
+  id: string;
+  name: string;
+  description: string | null;
+  isPublic: boolean;
+  problemCount: number;
+  createdAt: string;
 }
 
 const formData = ref<ProblemData>({
@@ -37,13 +52,38 @@ const formData = ref<ProblemData>({
   correctAnswer: "",
   explanation: "",
   difficulty: "medium",
+  subject: "",
+  chapter: "",
+  grade: "",
   source: "",
   imageFile: null,
   imagePreviewUrl: null,
   hashtags: [],
+  concepts: [],
 });
 
 const isUploading = ref(false);
+
+// Testbank selector
+const { data: testbanks } = await useFetch<Testbank[]>("/api/teacher/testbanks");
+const selectedTestbankIds = ref<string[]>([]);
+
+watch(testbanks, (tbs) => {
+  if (!tbs || selectedTestbankIds.value.length > 0) return;
+  const preselectId = route.query.testbankId as string | undefined;
+  if (preselectId && tbs.some(t => t.id === preselectId)) {
+    selectedTestbankIds.value = [preselectId];
+  } else {
+    const firstPublic = tbs.find(t => t.isPublic);
+    if (firstPublic) selectedTestbankIds.value = [firstPublic.id];
+  }
+}, { immediate: true });
+
+const toggleTestbank = (id: string) => {
+  const idx = selectedTestbankIds.value.indexOf(id);
+  if (idx === -1) selectedTestbankIds.value.push(id);
+  else selectedTestbankIds.value.splice(idx, 1);
+};
 
 const submitProblem = async () => {
   try {
@@ -65,8 +105,7 @@ const submitProblem = async () => {
       imageUrl = uploadedUrl;
     }
 
-    // Create problem
-    await $fetch("/api/teacher/problems", {
+    const created = await $fetch<{ id: string }>("/api/teacher/problems", {
       method: "POST",
       body: {
         title: formData.value.title,
@@ -78,11 +117,22 @@ const submitProblem = async () => {
         correctAnswer: formData.value.correctAnswer,
         explanation: formData.value.explanation,
         difficulty: formData.value.difficulty,
+        subject: formData.value.subject,
+        chapter: formData.value.chapter,
+        grade: formData.value.grade,
         source: formData.value.source,
         imageUrl,
         hashtags: formData.value.hashtags,
+        testbankIds: selectedTestbankIds.value,
       },
     });
+
+    if (formData.value.concepts.length > 0) {
+      await $fetch(`/api/teacher/problems/${created.id}/concepts`, {
+        method: "PUT",
+        body: { concepts: formData.value.concepts },
+      });
+    }
 
     alert(useNuxtApp().$i18n.t("teacher.problems.create.success"));
     navigateTo(localePath("/teacher/problems"));
@@ -134,6 +184,34 @@ const handleCancel = () => {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Left Column: Editor -->
       <div>
+        <!-- Testbank Selector -->
+        <div v-if="testbanks && testbanks.length > 0" class="card bg-base-100 shadow-xl mb-6">
+          <div class="card-body">
+            <h2 class="card-title text-lg">{{ $t('teacher.problems.select_testbank') }}</h2>
+            <div class="space-y-2">
+              <label
+                v-for="tb in testbanks"
+                :key="tb.id"
+                class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-base-200"
+              >
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-primary"
+                  :checked="selectedTestbankIds.includes(tb.id)"
+                  @change="toggleTestbank(tb.id)"
+                />
+                <span class="flex-1">{{ tb.name }}</span>
+                <span
+                  class="badge badge-sm"
+                  :class="tb.isPublic ? 'badge-success' : 'badge-warning'"
+                >
+                  {{ tb.isPublic ? $t('teacher.problems.testbanks.is_public') : $t('teacher.problems.testbanks.is_private') }}
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <TeacherProblemForm
           v-model="formData"
           :is-uploading="isUploading"

@@ -6,6 +6,7 @@ import {
   hwRecords,
   homeworkCompletions,
   errorProblems,
+  favorites,
 } from "~~/db/schema";
 
 export default defineEventHandler(async (event) => {
@@ -58,13 +59,24 @@ export default defineEventHandler(async (event) => {
       content: problems.content,
       choices: problems.choices,
       difficulty: problems.difficulty,
+      subject: problems.subject,
+      chapter: problems.chapter,
+      grade: problems.grade,
       source: problems.source,
       imageUrl: problems.imageUrl,
-      correctAnswer: problems.correctAnswer, // Include answer
-      explanation: problems.explanation, // Include explanation
+      correctAnswer: problems.correctAnswer,
+      explanation: problems.explanation,
+      isFavorite: favorites.id,
     })
     .from(homeworkProblems)
     .innerJoin(problems, eq(homeworkProblems.problemId, problems.id))
+    .leftJoin(
+      favorites,
+      and(
+        eq(favorites.problemId, problems.id),
+        eq(favorites.userId, session.user.id)
+      )
+    )
     .where(eq(homeworkProblems.homeworkId, homeworkId))
     .orderBy(asc(homeworkProblems.order));
 
@@ -99,6 +111,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       ...problem,
+      isFavorite: problem.isFavorite != null,
       submissionStatus: record
         ? {
             submitted: record.submitted,

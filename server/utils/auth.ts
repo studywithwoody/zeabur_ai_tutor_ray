@@ -3,11 +3,15 @@ import type { H3Event } from "h3";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../../db";
 import * as schema from "../../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import { admin } from "better-auth/plugins";
 
+const baseURL =
+  process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
 export const auth = betterAuth({
+  baseURL,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
@@ -16,13 +20,32 @@ export const auth = betterAuth({
     enabled: true,
   },
   socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    },
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? {
+          google: {
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          },
+        }
+      : {}),
   },
 
   databaseHooks: {
+    user: {
+      create: {
+        after: async (newUser) => {
+          const result = await db
+            .select({ count: sql<number>`count(*)::int` })
+            .from(schema.user);
+          if (result[0]?.count === 1) {
+            await db
+              .update(schema.user)
+              .set({ role: "admin" })
+              .where(eq(schema.user.id, newUser.id));
+          }
+        },
+      },
+    },
     session: {
       create: {
         after: async (session) => {
@@ -36,12 +59,12 @@ export const auth = betterAuth({
   },
   plugins: [admin()],
   trustedOrigins: [
-    "https://preview.studywithwoody.site",
-    "https://staging.studywithwoody.site",
-    "https://studywithwoody.site",
-    "http://localhost:3000",
+    baseURL,
+    ...(process.env.NODE_ENV !== "production"
+      ? ["http://localhost:3000"]
+      : [])
   ],
-  debug: true,
+  debug: process.env.NODE_ENV !== "production",
 });
 
 export const requireAuthSession = async (event: H3Event) => {

@@ -54,17 +54,51 @@ export function canvasFallback(themeName: string | null | undefined): CanvasThem
 
 /**
  * DaisyUI tokens are oklch(). Cytoscape only parses comma-form rgb()/hsl() and #hex.
- * A canvas fillStyle assignment resolves oklch/color-mix into #rrggbb.
+ * Chrome keeps oklch through getComputedStyle and canvas fillStyle, so convert here.
  */
+function channelToUnit(raw: string, percentScale: number): number {
+  return raw.endsWith("%") ? Number.parseFloat(raw) / percentScale : Number.parseFloat(raw);
+}
+
+function cube(value: number): number {
+  return value * value * value;
+}
+
+function gamma(channel: number): number {
+  const clamped = Math.min(1, Math.max(0, channel));
+  const encoded = clamped <= 0.0031308 ? 12.92 * clamped : 1.055 * clamped ** (1 / 2.4) - 0.055;
+  return Math.round(Math.min(1, Math.max(0, encoded)) * 255);
+}
+
+/** CSS Color 4 OKLab matrices. Chroma percentages use the spec's 0.4 = 100% scale. */
+function oklchToRgb(raw: string): string | null {
+  const match = raw
+    .trim()
+    .match(/^oklch\(\s*([0-9.]+%?)\s+([0-9.]+%?)\s+(-?[0-9.]+)/i);
+  if (!match) return null;
+  const lightness = channelToUnit(match[1], 100);
+  const chroma = channelToUnit(match[2], 100 / 0.4);
+  const hue = (Number.parseFloat(match[3]) * Math.PI) / 180;
+  if ([lightness, chroma, hue].some((value) => Number.isNaN(value))) return null;
+  const a = chroma * Math.cos(hue);
+  const b = chroma * Math.sin(hue);
+  const l_ = lightness + 0.3963377774 * a + 0.2158037573 * b;
+  const m_ = lightness - 0.1055613458 * a - 0.0638541728 * b;
+  const s_ = lightness - 0.0894841775 * a - 1.291485548 * b;
+  const l = cube(l_);
+  const m = cube(m_);
+  const s = cube(s_);
+  return `rgb(${gamma(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s)}, ${gamma(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s)}, ${gamma(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s)})`;
+}
+
 function toCanvasRgb(raw: string, fallback: string): string {
   const trimmed = raw.trim();
-  if (!trimmed || typeof document === "undefined") return fallback;
-  const commaRgb = trimmed.match(
-    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i
-  );
-  if (commaRgb) {
-    return `rgb(${commaRgb[1]}, ${commaRgb[2]}, ${commaRgb[3]})`;
-  }
+  if (!trimmed) return fallback;
+  const fromOklch = oklchToRgb(trimmed);
+  if (fromOklch) return fromOklch;
+  const commaRgb = trimmed.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (commaRgb) return `rgb(${commaRgb[1]}, ${commaRgb[2]}, ${commaRgb[3]})`;
+  if (typeof document === "undefined") return fallback;
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   if (!context) return fallback;
@@ -99,31 +133,32 @@ function luminance(color: string): number {
 export function readCanvasTheme(): CanvasTheme {
   if (typeof document === "undefined") return DARK_CANVAS;
   const root = document.documentElement;
+  const fallback = canvasFallback(root.getAttribute("data-theme"));
   const probe = document.createElement("span");
   probe.style.position = "absolute";
   probe.style.left = "-9999px";
   document.body.appendChild(probe);
-  const rgb = (variable: string, fallback: string) => {
+  const rgb = (variable: string, fallbackColor: string) => {
     const raw = getComputedStyle(root).getPropertyValue(variable).trim();
-    if (!raw) return fallback;
+    if (!raw) return fallbackColor;
     probe.style.color = raw;
     const resolved = getComputedStyle(probe).color;
-    return toCanvasRgb(resolved && resolved !== "rgba(0, 0, 0, 0)" ? resolved : raw, fallback);
+    return toCanvasRgb(resolved && resolved !== "rgba(0, 0, 0, 0)" ? resolved : raw, fallbackColor);
   };
-  const base100 = rgb("--color-base-100", DARK_CANVAS.base100);
+  const base100 = rgb("--color-base-100", fallback.base100);
   const theme: CanvasTheme = {
     base100,
-    base200: rgb("--color-base-200", DARK_CANVAS.base200),
-    base300: rgb("--color-base-300", DARK_CANVAS.base300),
-    baseContent: rgb("--color-base-content", DARK_CANVAS.baseContent),
-    primary: rgb("--color-primary", DARK_CANVAS.primary),
-    secondary: rgb("--color-secondary", DARK_CANVAS.secondary),
-    accent: rgb("--color-accent", DARK_CANVAS.accent),
-    neutral: rgb("--color-neutral", DARK_CANVAS.neutral),
-    info: rgb("--color-info", DARK_CANVAS.info),
-    success: rgb("--color-success", DARK_CANVAS.success),
-    warning: rgb("--color-warning", DARK_CANVAS.warning),
-    error: rgb("--color-error", DARK_CANVAS.error),
+    base200: rgb("--color-base-200", fallback.base200),
+    base300: rgb("--color-base-300", fallback.base300),
+    baseContent: rgb("--color-base-content", fallback.baseContent),
+    primary: rgb("--color-primary", fallback.primary),
+    secondary: rgb("--color-secondary", fallback.secondary),
+    accent: rgb("--color-accent", fallback.accent),
+    neutral: rgb("--color-neutral", fallback.neutral),
+    info: rgb("--color-info", fallback.info),
+    success: rgb("--color-success", fallback.success),
+    warning: rgb("--color-warning", fallback.warning),
+    error: rgb("--color-error", fallback.error),
     dark: luminance(base100) < 0.45,
   };
   probe.remove();

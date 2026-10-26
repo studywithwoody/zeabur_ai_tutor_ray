@@ -5,5 +5,5 @@ definePageMeta({
 </script>
 
 <template>
-  <KgExplorerShell />
+  <KgExplorerShell mode="student" />
 </template>

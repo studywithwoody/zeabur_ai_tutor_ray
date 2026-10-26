@@ -2,6 +2,8 @@
 const { t } = useI18n()
 const explorer = useExplorer()
 const { unitColor, edgeColor, currentTheme } = useKgColors()
+const mastery = useState<Record<string, string>>('kg-mastery', () => ({}))
+const showMastery = computed(() => Object.keys(mastery.value).length > 0)
 const open = ref(true)
 
 const shapes = computed(() => [
@@ -54,6 +56,18 @@ onMounted(() => {
           <li v-for="unit in explorer.course.value.units" :key="unit.id" class="flex items-center gap-1.5">
             <span class="h-2.5 w-2.5 shrink-0 rounded-sm" :style="{ background: unitColor(unit.unit).accent }" />
             <span class="truncate">{{ unit.label }}</span>
+          </li>
+        </ul>
+      </div>
+      <div v-if="showMastery">
+        <p class="mb-1 text-[11px] font-semibold uppercase tracking-wide text-base-content/60">{{ t('kg.mastery.legend') }}</p>
+        <ul class="space-y-1">
+          <li v-for="band in ['untried', 'low', 'mid', 'high']" :key="band" class="flex items-center gap-2">
+            <span
+              class="h-3 w-5 rounded-sm border-[3px] bg-base-100"
+              :style="{ borderColor: band === 'untried' ? currentTheme().baseContent : band === 'low' ? currentTheme().error : band === 'mid' ? currentTheme().warning : currentTheme().success }"
+            />
+            {{ t(`kg.mastery.${band}`) }}
           </li>
         </ul>
       </div>

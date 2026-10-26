@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { problems } from "../../db/schema";
-import { and, or, eq, ilike, sql, cosineDistance, isNotNull } from "drizzle-orm";
+import { and, or, eq, ilike, sql, cosineDistance, isNotNull, inArray } from "drizzle-orm";
 import { generateEmbedding } from "./embedding";
 
 export type SearchProblemsCriteria = {
@@ -16,10 +16,15 @@ export type SearchProblemsCriteria = {
   limit?: number;
   viewerId?: string;
   viewerRole?: string;
+  ids?: string[];
 };
 
 export async function searchProblems(criteria: SearchProblemsCriteria) {
+  if (criteria.ids && criteria.ids.length === 0) return [];
   const filters = [];
+  if (criteria.ids) {
+    filters.push(inArray(problems.id, criteria.ids));
+  }
 
   if (criteria.title) {
     filters.push(

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { Core, LayoutOptions } from 'cytoscape'
 import { graphStylesheet } from '../../../lib/kg/graphStyle'
-import { readCanvasTheme, unitColorsFor } from '../../../lib/kg/themeColors'
+import { masteryOutline, readCanvasTheme, unitColorsFor } from '../../../lib/kg/themeColors'
 
 const { t } = useI18n()
 const explorer = useExplorer()
 const themeName = useState<string>('theme', () => 'dark')
+const mastery = useState<Record<string, string>>('kg-mastery', () => ({}))
+const coverage = useState<Record<string, number>>('kg-coverage', () => ({}))
 const host = ref<HTMLElement | null>(null)
 const ready = ref(false)
 const zoomLabel = ref('100%')
@@ -59,6 +61,13 @@ function paintTheme() {
       const colors = unitColorsFor(String(node.data('unit') || ''), theme)
       node.data('color', colors.accent)
       node.data('fill', colors.fill)
+      if (!node.data('baseLabel')) node.data('baseLabel', node.data('label'))
+      const outline = masteryOutline(mastery.value[String(node.id())], theme)
+      if (outline) node.data('outline', outline)
+      else node.removeData('outline')
+      const count = coverage.value[String(node.id())]
+      if (typeof count === 'number') node.data('coverage', String(count))
+      else node.removeData('coverage')
     })
   })
   cy.style(graphStylesheet(theme) as never)
@@ -253,6 +262,8 @@ watch(themeName, async () => {
   await nextTick()
   paintTheme()
 })
+
+watch([mastery, coverage], () => paintTheme(), { deep: true })
 
 watch(explorer.layout, () => {
   if (!cy) return

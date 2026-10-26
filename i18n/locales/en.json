@@ -1360,6 +1360,26 @@
     "warnings": "Skipped {count} records that could not be matched.",
     "select_concept": "Select a concept",
     "select_hint": "Click a node or a link to see the definition, equations, lecture source, and neighbors.",
+    "practice": {
+      "about": "About",
+      "tab": "Practice",
+      "expand": "Include problems from prerequisites (up to 3 steps)",
+      "empty": "No practice problems you can see for this concept.",
+      "via_prerequisite": "Prerequisite"
+    },
+    "mastery": {
+      "legend": "Mastery",
+      "student": "Student",
+      "none": "Coverage only",
+      "untried": "Not tried",
+      "low": "Under 50%",
+      "mid": "50–80%",
+      "high": "80% or more"
+    },
+    "coverage": {
+      "count": "{count} tagged problems"
+    },
+    "review_first": "Review these prerequisites first",
     "unit": "Unit",
     "unit_count": "This unit has {count} concepts. Click a name to focus it.",
     "lecture_files": "Lecture files",

@@ -11,6 +11,30 @@ const explorer = useExplorer()
 
 const node = computed(() => explorer.selectedNode.value)
 const edge = computed(() => explorer.selectedEdge.value)
+const detailTab = ref<'about' | 'practice'>('about')
+const mastery = useState<Record<string, string>>('kg-mastery', () => ({}))
+const coverage = useState<Record<string, number>>('kg-coverage', () => ({}))
+
+watch(node, () => {
+  detailTab.value = 'about'
+})
+
+const reviewFirst = computed(() => {
+  const current = node.value
+  if (!current || current.type === 'unit' || Object.keys(mastery.value).length === 0) return []
+  const ids = new Set<string>()
+  for (const item of explorer.course.value.edges) {
+    if (item.relation === 'prerequisite' && item.target === current.id) ids.add(item.source)
+    if (item.relation === 'derived_from' && item.source === current.id) ids.add(item.target)
+  }
+  return [...ids]
+    .map((id) => ({
+      id,
+      label: labelOf(id),
+      band: mastery.value[id] || 'untried',
+    }))
+    .filter((item) => item.band === 'untried' || item.band === 'low')
+})
 
 const unitInfo = computed(() => {
   const current = node.value
@@ -145,6 +169,31 @@ function kindLabel(group: 'types' | 'relations' | 'basis', key: string) {
           <span v-else-if="node.equations.length && node.equationsVerified === true" class="badge badge-success badge-outline badge-sm">{{ t('kg.verified') }}</span>
         </div>
 
+        <div class="join">
+          <button type="button" class="btn btn-sm join-item" :class="detailTab === 'about' ? 'btn-primary' : 'btn-ghost'" @click="detailTab = 'about'">
+            {{ t('kg.practice.about') }}
+          </button>
+          <button type="button" class="btn btn-sm join-item" :class="detailTab === 'practice' ? 'btn-primary' : 'btn-ghost'" @click="detailTab = 'practice'">
+            {{ t('kg.practice.tab') }}
+          </button>
+        </div>
+        <p v-if="coverage[node.id] != null" class="text-sm text-base-content/70">
+          {{ t('kg.coverage.count', { count: coverage[node.id] }) }}
+        </p>
+        <section v-if="reviewFirst.length" class="space-y-2 rounded-box border border-warning/40 bg-warning/10 p-3">
+          <h3 class="text-sm font-semibold">{{ t('kg.review_first') }}</h3>
+          <ul class="space-y-1">
+            <li v-for="item in reviewFirst" :key="item.id">
+              <button type="button" class="text-left text-sm text-primary underline" @click="explorer.selectNode(item.id)">
+                <MathText :text="item.label" />
+                <span class="ml-1 badge badge-ghost badge-sm">{{ t(`kg.mastery.${item.band}`) }}</span>
+              </button>
+            </li>
+          </ul>
+        </section>
+        <KgPracticeList v-if="detailTab === 'practice'" :course-id="explorer.course.value.id" :slug="node.id" />
+
+        <template v-if="detailTab === 'about'">
         <section v-if="node.definition" class="space-y-1">
           <h3 class="text-base font-semibold">{{ t('kg.definition') }}</h3>
           <p class="text-sm leading-6"><MathText :text="node.definition" /></p>
@@ -217,6 +266,7 @@ function kindLabel(group: 'types' | 'relations' | 'basis', key: string) {
             <EvidenceBlock v-if="item.evidence" :evidence="item.evidence" />
           </article>
         </section>
+        </template>
       </div>
 
       <div v-else class="grid min-h-full place-items-center text-center">

@@ -137,6 +137,20 @@ export function graphStylesheet(theme: CanvasTheme) {
       style: { "line-style": "dashed", "line-dash-pattern": [6, 4], opacity: 0.8 },
     },
     {
+      selector: "node[outline]",
+      style: {
+        "border-color": "data(outline)",
+        "border-width": 5,
+      },
+    },
+    {
+      selector: "node[coverage]",
+      style: {
+        label: (element: { data: (key: string) => string }) =>
+          `${element.data("baseLabel") || element.data("label")} (${element.data("coverage")})`,
+      },
+    },
+    {
       selector: ".faded",
       style: { opacity: 0.12 },
     },

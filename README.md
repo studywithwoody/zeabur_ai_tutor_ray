@@ -265,6 +265,8 @@ Signed-in students and teachers (and admins) can open the graph at `/student/kno
 
 Teachers tag a problem with concepts from the course whose subject matches `problems.subject`. Confirming a tag merges that concept label into `problems.hashtags` and keeps tags that are not concept labels, then refreshes the problem embedding. `POST /api/teacher/kg/auto-tag` writes unconfirmed `ai` rows and does not overwrite an existing pair.
 
+Practice problems for a concept reuse `searchProblems`, so a student only sees problems they are already allowed to open. `expand=1` walks `prerequisite` and `derived_from` edges up to three steps. Mastery colors come from that student's latest submission on each visible tagged problem.
+
 ---
 
 ## Notes for Contributors

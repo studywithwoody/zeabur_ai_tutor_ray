@@ -199,6 +199,17 @@ export function unitColorsFor(
   };
 }
 
+export function masteryOutline(
+  band: string | undefined,
+  theme: CanvasTheme
+): string | null {
+  if (band === "untried") return theme.baseContent;
+  if (band === "low") return theme.error;
+  if (band === "mid") return theme.warning;
+  if (band === "high") return theme.success;
+  return null;
+}
+
 export function relationColor(
   relation: string,
   theme: CanvasTheme = DARK_CANVAS

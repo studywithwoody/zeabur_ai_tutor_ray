@@ -14,6 +14,8 @@ const props = defineProps<{
     understood?: boolean | null;
     isFavorite?: boolean | null;
   };
+  to?: string;
+  showFavorite?: boolean;
 }>();
 
 const localePath = useLocalePath();
@@ -92,9 +94,13 @@ const localePath = useLocalePath();
           />
         </div>
         <div class="flex gap-2 items-center">
-          <StudentFavoriteButton :problem-id="String(problem.id)" :is-favorite="problem.isFavorite ?? false" />
+          <StudentFavoriteButton
+            v-if="showFavorite !== false"
+            :problem-id="String(problem.id)"
+            :is-favorite="problem.isFavorite ?? false"
+          />
           <NuxtLink
-            :to="localePath(`/student/problems/${problem.id}`)"
+            :to="to || localePath(`/student/problems/${problem.id}`)"
             class="btn btn-ghost btn-sm"
           >
             {{ $t("student.problems.solve") }}

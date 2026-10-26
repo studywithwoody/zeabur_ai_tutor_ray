@@ -1360,6 +1360,26 @@
     "warnings": "已略過 {count} 筆無法對上的資料。",
     "select_concept": "選擇一個概念",
     "select_hint": "點圖上的節點或連結，這裡會顯示定義、公式、講義出處，以及相鄰概念。",
+    "practice": {
+      "about": "說明",
+      "tab": "練習題",
+      "expand": "包含先備知識的題目（最多三層）",
+      "empty": "這個知識點沒有你看得到的練習題。",
+      "via_prerequisite": "先備"
+    },
+    "mastery": {
+      "legend": "精熟度",
+      "student": "學生",
+      "none": "只看覆蓋",
+      "untried": "尚未作答",
+      "low": "低於 50%",
+      "mid": "50–80%",
+      "high": "80% 以上"
+    },
+    "coverage": {
+      "count": "已標記 {count} 題"
+    },
+    "review_first": "建議先複習這些先備",
     "unit": "單元",
     "unit_count": "這個單元有 {count} 個概念。點名稱可在圖上定位。",
     "lecture_files": "講義檔案",

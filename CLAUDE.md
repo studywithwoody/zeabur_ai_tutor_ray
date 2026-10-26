@@ -6,17 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Project: `AI_tutor` — ID: `699d4f8c99e5a92f233f9077`
 - Nuxt app service (`ai-tutor-new`) — ID: `699d5917f134fffc31ddcc38`
-- AI microservice (`ai-service`) — ID: `6a02061ddd502f86055af4c6`
 - PostgreSQL — ID: `699d4f9699e5a92f233f9078`
 - Server: woody's server (Linode Singapore) — `server-697eaea70f19f38d75bddde3`
+- Legacy Zeabur service `ai-service` (`6a02061ddd502f86055af4c6`) is not built from this tree. Upstream removed `packages/ai-service`; chat now runs inside the Nuxt server.
 
-To redeploy:
+To redeploy the Nuxt app:
 ```bash
-# Redeploy Nuxt app
 npx zeabur@latest deploy --project-id 699d4f8c99e5a92f233f9077 --service-id 699d5917f134fffc31ddcc38 --json
-
-# Redeploy AI microservice (run from packages/ai-service/)
-cd packages/ai-service && npx zeabur@latest deploy --project-id 699d4f8c99e5a92f233f9077 --service-id 6a02061ddd502f86055af4c6 --json
 ```
 
 ## Commands
@@ -31,15 +27,13 @@ pnpm preview                # Preview production build
 pnpm db:generate            # Generate Drizzle migrations from schema changes
 pnpm db:migrate             # Apply migrations to the database
 pnpm db:studio              # Open Drizzle Studio (database GUI)
+pnpm db:import-kg           # Upsert data/courses knowledge graphs + embeddings
 docker compose up -d        # Start local PostgreSQL
-
-# AI microservice (separate process)
-cd packages/ai-service && uv run uvicorn src.main:app --reload --port 8000
 ```
 
 ## Architecture Overview
 
-This is a **Nuxt 4 tutoring platform** with a separate **Python FastAPI AI microservice**.
+This is a **Nuxt 4 tutoring platform** with integrated AI chat (OpenAI-compatible, server-side).
 
 ### Directory Layout
 
@@ -59,10 +53,6 @@ server/
     r2.ts                   # Two Cloudflare R2 S3 clients
 lib/
   auth-client.ts            # better-auth Vue client (signIn, signOut, useSession)
-packages/ai-service/        # Python FastAPI + LangGraph AI microservice
-  src/main.py               # FastAPI entrypoint, /chat endpoint
-  src/graph/                # LangGraph workflow (state, nodes, workflow)
-  src/tools/                # MCP tool integration
 locales/                    # i18n translation files (en.json, zhTW.json)
 drizzle/                    # Auto-generated migration files
 ```
@@ -91,6 +81,7 @@ All tables are in `db/schema.ts`:
 - **Calendar**: `personalEvents`
 - **Role flow**: `roleRequests`, `pendingParent`, `parentStudents`
 - **AI**: `chatHistory` (jsonb `messages` array)
+- **Knowledge graph**: `kgCourses`, `kgUnits`, `kgConcepts` (id `course:slug`, `isActive` instead of hard delete, 1536-d embedding), `kgEdges`, `problemConcepts`. Course JSON + gap reports live in `data/courses/`. Import with `pnpm db:import-kg` (`scripts/import-knowledge-graph.ts`). `kg_courses.subject` matches `problems.subject` case- and space-insensitively (`AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`). Read API: `server/api/kg/` (student, teacher, or admin only). Pages: `app/pages/student/knowledge-graph.vue`, `app/pages/teacher/knowledge-graph.vue`. UI components: `app/components/kg/`. Teacher tagging: `server/utils/kg-tagging.ts` and `server/api/teacher/problems/[id]/concepts`. Confirmed labels are merged into `problems.hashtags`. Practice problems (`/api/kg/:course/concepts/:slug/problems`) reuse `searchProblems` visibility; `expand=1` walks `prerequisite` and `derived_from` up to three steps. Mastery comes from the student's latest submission (`/api/student/kg/mastery`, teacher view `/api/teacher/students/:id/kg-mastery`). Teachers also see confirmed problem counts per concept.
 
 ### i18n
 
@@ -105,12 +96,22 @@ Two separate R2 buckets accessed via `server/utils/r2.ts`:
 - `r2` — for problem images (`r2BucketName`)
 - `classMaterialsR2` — for teacher-uploaded class materials (`classMaterialsR2BucketName`)
 
-### AI Microservice
+### PWA (Progressive Web App)
 
-- Runs independently on port 8000 (Python FastAPI + LangGraph)
-- Nuxt calls it via `server/api/student/chat.post.ts` → HTTP POST to `http://localhost:8000/chat`
-- LangGraph workflow: `packages/ai-service/src/graph/workflow.py`
-- Managed with `uv` (Python package manager); uses MCP tool integration
+- **Module**: `@vite-pwa/nuxt` with `generateSW` strategy
+- **Update behavior**: `prompt` — shows a DaisyUI toast when a new version is available (`app/components/PwaUpdatePrompt.vue`)
+- **Offline**: falls back to `public/offline.html` when offline; API routes (`/api/*`) are excluded from service worker caching
+- **Manifest & meta tags**: registered in `app/app.vue` via `<NuxtPwaManifest />` and `useHead()`
+- **Icons**: `public/pwa-192x192.png`, `public/pwa-512x512.png`, `public/apple-touch-icon.png`, `public/mask-icon.svg`
+- **Config**: all PWA options are in the `pwa` key of `nuxt.config.ts`
+- **Dev testing**: set `pwa.devOptions.enabled: true` in `nuxt.config.ts` to test PWA in dev mode
+
+### AI Chat
+
+- Integrated into Nuxt server — no separate microservice needed
+- `server/utils/ai-chat.ts` — OpenAI SDK streaming chat with tool-call loop (configurable base URL / model via `AI_BASE_URL`, `AI_MODEL`, `AI_API_KEY`)
+- `server/utils/ai-tools/` — TypeScript tool definitions (search-problems, recommend-materials, create-problem, web-search)
+- Student chat: `server/api/student/chat.post.ts`; Teacher chat: `server/api/teacher/chat.post.ts`
 
 ### Environment Variables
 
@@ -119,7 +120,11 @@ Required in `.env` or `.env.local` (`.env.local` takes precedence):
 - `BETTER_AUTH_SECRET` — auth signing secret
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — Google OAuth
 - `OPENAI_API_KEY` — for AI features and teacher tools (vision, generate options)
+- `AI_BASE_URL` — OpenAI-compatible base URL (default: `https://api.openai.com/v1`)
+- `AI_API_KEY` — API key for AI chat (falls back to `OPENAI_API_KEY`)
+- `AI_MODEL` — chat model name (default: `gpt-4o`)
 - `GOOGLE_VISION_API_KEY` — for teacher's image-to-problem OCR tool
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_DOMAIN`
 - `CLASS_MATERIALS_R2_*` — same set for the class materials bucket
-- `PUBLIC_BASE_URL` — used by auth-client SSR fallback
+- `NUXT_PUBLIC_BASE_URL` — app base URL (used by auth server, auth client SSR, email templates)
+- `EMBEDDING_API_KEY` / `EMBEDDING_BASE_URL` / `EMBEDDING_MODEL` — problem and knowledge-graph embeddings (key falls back to `OPENAI_API_KEY`; model default `text-embedding-3-small`, 1536 dims)

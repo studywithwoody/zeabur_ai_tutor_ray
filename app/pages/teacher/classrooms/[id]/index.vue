@@ -296,7 +296,7 @@ const deleteClassroom = async () => {
                       <td>
                         <span
                           :class="{
-                            'text-error': new Date(hw.deadline) < new Date(),
+                            'text-error': hw.deadline && new Date(hw.deadline) < new Date(),
                           }"
                         >
                           {{
@@ -340,6 +340,19 @@ const deleteClassroom = async () => {
                 {{ $t("teacher.classrooms.materials.title") }}
               </h2>
               <ClassroomMaterialsList
+                :classroom-id="classroomId"
+                user-type="teacher"
+              />
+            </div>
+          </div>
+
+          <!-- Shared Testbanks Section -->
+          <div class="card bg-base-100 shadow-xl border border-base-200">
+            <div class="card-body">
+              <h2 class="card-title mb-4">
+                {{ $t("components.shared_testbanks.title") }}
+              </h2>
+              <ClassroomTestbanksList
                 :classroom-id="classroomId"
                 user-type="teacher"
               />

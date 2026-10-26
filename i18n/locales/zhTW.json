@@ -21,6 +21,44 @@
       "instant_feedback": {
         "title": "即時回饋",
         "description": "立即獲得答案的回饋。透過 AI 驅動的解析，從錯誤中即時學習。"
+      },
+      "ai_tutor_chat": {
+        "title": "AI 家教對話",
+        "description": "針對任何題目獲得即時、個人化的解析。AI 在對話過程中推薦相關題目與學習資料。"
+      },
+      "class_materials": {
+        "title": "課程資料",
+        "description": "老師將學習資料上傳至資料夾並整理。學生可在同一地方存取班級分享的所有內容。"
+      },
+      "scheduling": {
+        "title": "老師預約",
+        "description": "老師發佈可預約的時段。學生瀏覽老師資料，直接在平台上預約課程。"
+      }
+    },
+    "roles": {
+      "title": "為每位使用者打造",
+      "student": {
+        "title": "學生",
+        "feature_1": "從題庫練習各科題目",
+        "feature_2": "追蹤錯題並收藏常用題目",
+        "feature_3": "完成並檢視作業",
+        "feature_4": "存取老師分享的課程資料",
+        "feature_5": "瀏覽老師資料並預約課程"
+      },
+      "teacher": {
+        "title": "老師",
+        "feature_1": "借助 AI 建立題目庫",
+        "feature_2": "管理班級與學生名單",
+        "feature_3": "派發作業並追蹤完成成績",
+        "feature_4": "上傳並分享課程資料",
+        "feature_5": "發佈時間表並管理學生預約"
+      },
+      "parent": {
+        "title": "家長",
+        "feature_1": "將帳號與孩子的學生帳號連結",
+        "feature_2": "檢視孩子的班級",
+        "feature_3": "監控作業成績與完成情況",
+        "feature_4": "追蹤多個班級的學習進度"
       }
     }
   },
@@ -50,7 +88,24 @@
   "auth": {
     "title": "立即登入！",
     "description": "使用 AI 學習助手，開始解決問題並獲得智慧解析。",
-    "google_login": "使用 Google 登入"
+    "google_login": "使用 Google 登入",
+    "setup_title": "歡迎！設定您的平台",
+    "setup_description": "目前尚無任何帳號。第一位登入的使用者將成為平台管理員。",
+    "setup_badge": "初始設定",
+    "setup_google_login": "使用 Google 登入成為管理員",
+    "tab_login": "登入",
+    "tab_signup": "註冊",
+    "name_label": "姓名",
+    "name_placeholder": "例如：王小明",
+    "email_label": "電子郵件",
+    "email_placeholder": "例如：wang{'@'}example.com",
+    "password_label": "密碼",
+    "password_placeholder": "至少 8 個字元",
+    "login_button": "登入",
+    "signup_button": "註冊",
+    "setup_signup_button": "註冊成為管理員",
+    "or_divider": "或",
+    "error_generic": "發生錯誤，請再試一次。"
   },
   "login_success": {
     "title": "登入成功！",
@@ -104,7 +159,8 @@
       "title": "學生",
       "external_links": "外部連結",
       "physimhub": "PhysimHub",
-      "testbank": "題庫",
+      "testbanks": "題庫",
+      "testbank": "所有題目",
       "favorites": "收藏",
       "wrong": "錯題",
       "classrooms": "教室",
@@ -112,7 +168,78 @@
       "logout": "登出",
       "menu": "選單",
       "dashboard": "儀表板",
-      "materials": "教材"
+      "materials": "教材",
+      "teachers": "預約",
+      "profile": "個人資料",
+      "problem_lists": "題目清單"
+    },
+    "profile": {
+      "title": "個人資料",
+      "description": "更新你的個人資料。",
+      "change_avatar": "更換照片",
+      "uploading_avatar": "上傳中...",
+      "avatar_upload_error": "上傳照片失敗",
+      "avatar_too_large": "照片大小不能超過 5MB",
+      "name_label": "姓名",
+      "name_placeholder": "你的姓名",
+      "gender_label": "性別",
+      "gender_options": {
+        "male": "男",
+        "female": "女",
+        "other": "其他"
+      },
+      "bio_label": "自我介紹",
+      "bio_placeholder": "向大家介紹你自己...",
+      "interests_label": "興趣",
+      "interests_placeholder": "例如：閱讀、音樂、運動",
+      "save": "儲存個人資料",
+      "saving": "儲存中...",
+      "save_success": "個人資料已更新！",
+      "save_error": "更新個人資料失敗"
+    },
+    "teachers": {
+      "title": "尋找老師",
+      "description": "選擇老師以查看其可預約時段。",
+      "count": "{count} 位老師",
+      "view_availability": "查看可預約時段",
+      "back": "返回老師列表",
+      "available_slots": "可預約時段",
+      "slots_description": "選擇一個時段來預約。",
+      "no_slots": "此老師目前沒有可預約的時段。",
+      "no_teachers": "目前沒有可用的老師。",
+      "available_count": "{count} 個可預約",
+      "available": "可預約",
+      "booked": "已預約",
+      "book": "預約",
+      "loading": "載入中...",
+      "load_error": "載入老師資訊失敗",
+      "pending": "待確認",
+      "booking_modal": {
+        "title": "預約時段",
+        "note_label": "備註（選填）",
+        "note_placeholder": "留言給老師...",
+        "confirm": "確認預約",
+        "cancel": "取消",
+        "success": "預約請求已送出！",
+        "error": "預約失敗"
+      },
+      "profile_bio": "關於",
+      "profile_teaching_areas": "教學領域",
+      "profile_teaching_experience": "教學經歷",
+      "profile_interests": "興趣"
+    },
+    "bookings": {
+      "title": "我的預約",
+      "no_bookings": "尚無預約。",
+      "status_pending": "待確認",
+      "status_confirmed": "已確認",
+      "status_rejected": "已拒絕",
+      "status_cancelled": "已取消",
+      "cancel": "取消預約",
+      "cancel_confirm": "確定要取消這個預約嗎？",
+      "teacher_note": "老師留言",
+      "with_teacher": "與 {name}",
+      "load_more": "載入更早的預約"
     },
     "classrooms": {
       "title": "我的教室",
@@ -142,7 +269,8 @@
       "view_hw": "查看作業",
       "review_hw": "複習作業",
       "no_homeworks": "此教室尚無作業。",
-      "error_loading": "載入教室時發生錯誤："
+      "error_loading": "載入教室時發生錯誤：",
+      "teacher": "教師"
     },
     "homeworks": {
       "title": "我的作業",
@@ -192,7 +320,20 @@
       "ask_ai_button": "向我解釋",
       "error_loading": "載入題目時發生錯誤：",
       "understood": "已理解",
-      "mark_as_understood": "標記為已理解"
+      "mark_as_understood": "標記為已理解",
+      "created_by": "由 {name} 建立",
+      "difficulty_label": "難度",
+      "subject_label": "科目",
+      "chapter_label": "章節",
+      "grade_label": "年級",
+      "source_label": "來源",
+      "add_to_favorites": "加入收藏",
+      "remove_from_favorites": "取消收藏"
+    },
+    "testbanks": {
+      "title": "題庫",
+      "empty": "目前沒有可瀏覽的題庫。",
+      "back": "返回題庫列表"
     },
     "chat": {
       "new_chat": "新對話",
@@ -207,7 +348,34 @@
       "placeholder": "輸入您的訊息...",
       "send": "傳送",
       "error_response": "抱歉，發生錯誤。請再試一次。",
-      "tool_running": "使用工具中"
+      "tool_running": "使用工具中",
+      "web_search": "網路搜尋"
+    },
+    "problem_lists": {
+      "title": "我的題目清單",
+      "create": "新增清單",
+      "create_name_label": "清單名稱",
+      "create_desc_label": "描述（選填）",
+      "create_submit": "建立",
+      "empty": "您還沒有任何題目清單。",
+      "items": "{count} 題",
+      "view": "檢視清單",
+      "delete": "刪除",
+      "delete_confirm": "確定要刪除此清單？",
+      "sharing_enabled": "分享已開啟",
+      "sharing_disabled": "分享已關閉",
+      "enable_share": "開啟分享",
+      "disable_share": "關閉分享",
+      "copy_link": "複製連結",
+      "copied": "已複製！",
+      "remove_problem": "移除",
+      "back": "返回清單",
+      "edit": "編輯",
+      "save": "儲存",
+      "add_to_list": "加入清單",
+      "create_new_list": "新增清單...",
+      "add_success": "已加入清單",
+      "already_in_list": "已在清單中"
     }
   },
   "calendar_help": {
@@ -248,6 +416,35 @@
     }
   },
   "teacher": {
+    "profile": {
+      "title": "個人資料",
+      "description": "更新你的個人資料，讓學生更認識你。",
+      "avatar_label": "大頭貼",
+      "change_avatar": "更換照片",
+      "uploading_avatar": "上傳中...",
+      "avatar_upload_error": "上傳照片失敗",
+      "avatar_too_large": "照片大小不能超過 5MB",
+      "name_label": "姓名",
+      "name_placeholder": "你的姓名",
+      "gender_label": "性別",
+      "gender_options": {
+        "male": "男",
+        "female": "女",
+        "other": "其他"
+      },
+      "bio_label": "自我介紹",
+      "bio_placeholder": "向學生介紹你自己...",
+      "interests_label": "興趣",
+      "interests_placeholder": "例如：閱讀、登山、音樂",
+      "teaching_areas_label": "教學領域",
+      "teaching_areas_placeholder": "例如：數學、物理、化學",
+      "teaching_experience_label": "教學經歷",
+      "teaching_experience_placeholder": "描述你的教學背景...",
+      "save": "儲存個人資料",
+      "saving": "儲存中...",
+      "save_success": "個人資料已更新！",
+      "save_error": "更新個人資料失敗"
+    },
     "posts": {
       "back": "返回教室",
       "add_title": "新增貼文",
@@ -325,7 +522,65 @@
       "menu": "選單",
       "dashboard": "儀表板",
       "manage_problems": "管理題目",
-      "create_problem": "建立題目"
+      "create_problem": "建立題目",
+      "ai_chat": "AI 助手",
+      "schedule": "排程管理",
+      "profile": "個人資料"
+    },
+    "bookings": {
+      "title": "待確認的預約",
+      "no_pending": "無待確認的預約。",
+      "confirm": "確認",
+      "reject": "拒絕",
+      "note_label": "備註（選填）",
+      "note_placeholder": "新增備註...",
+      "confirm_success": "已確認預約！",
+      "reject_success": "已拒絕預約。",
+      "student_note": "學生留言",
+      "from_student": "來自 {name}"
+    },
+    "schedule": {
+      "title": "我的排程",
+      "description": "管理可預約的時段與教學活動排程。",
+      "modal_create": "新增排程事件",
+      "modal_edit": "編輯排程事件",
+      "form": {
+        "description_label": "說明",
+        "description_placeholder": "事件說明...",
+        "start_time": "開始時間",
+        "end_time": "結束時間",
+        "mark_available": "標記為可預約",
+        "save": "儲存事件",
+        "cancel": "取消",
+        "error_time_required": "開始與結束時間為必填",
+        "error_time_order": "開始時間須早於結束時間",
+        "error_save_failed": "儲存事件失敗",
+        "error_delete_failed": "刪除事件失敗"
+      },
+      "event": {
+        "available": "可預約",
+        "booked": "已預約",
+        "edit": "編輯",
+        "delete": "刪除",
+        "confirm_delete": "確定要刪除此事件嗎？"
+      }
+    },
+    "chat": {
+      "new_chat": "新對話",
+      "placeholder": "描述你想建立的題目...",
+      "send": "送出",
+      "start_prompt": "開始與 AI 討論並建立題目",
+      "header_ai": "AI 助手",
+      "header_user": "你",
+      "error_response": "發生錯誤，請重試。",
+      "tool_running": "正在執行工具",
+      "web_search": "網路搜尋",
+      "upload_image": "上傳圖片",
+      "uploading": "上傳中...",
+      "upload_failed": "圖片上傳失敗",
+      "image_too_large": "圖片須小於 20MB",
+      "remove_image": "移除圖片",
+      "image_attached": "已附加圖片"
     },
     "classrooms": {
       "title": "教室",
@@ -480,6 +735,23 @@
       "no_problems_found": "沒有找到符合條件的題目。",
       "confirm_delete": "您確定要刪除此題目嗎？",
       "delete_error": "刪除題目失敗",
+      "concepts": {
+        "label": "知識點",
+        "search": "搜尋概念、定律、公式或技能",
+        "suggest": "AI 建議",
+        "suggesting": "建議中...",
+        "confirm": "確認",
+        "primary": "主要知識點",
+        "course": "講義圖譜：{course}",
+        "no_course": "這個科目沒有對應的講義圖譜。",
+        "need_subject": "請先填寫與講義圖譜相符的科目。",
+        "no_suggestions": "找不到相近的知識點。請先儲存題目，等向量產生後再試。",
+        "embedding_unavailable": "向量服務目前無法使用，所以沒有產生建議。",
+        "suggest_failed": "無法載入建議。",
+        "auto_tag": "自動標記知識點",
+        "auto_tag_result": "已檢查 {examined} 題，新增 {inserted} 個未確認標記，略過 {skipped} 題。",
+        "auto_tag_failed": "自動標記失敗。"
+      },
       "create": {
         "title": "建立新題目",
         "success": "題目建立成功！",
@@ -496,6 +768,12 @@
         "load_error": "載入題目時發生錯誤："
       },
       "form": {
+        "subject": "科目",
+        "subject_placeholder": "例如：數學、自然",
+        "chapter": "章節",
+        "chapter_placeholder": "例如：第三章、二次方程式",
+        "grade": "年級",
+        "grade_placeholder": "例如：國一、高二",
         "difficulty": "難度",
         "difficulty_options": {
           "easy": "簡單",
@@ -574,7 +852,41 @@
           "image_title": "圖片預覽：",
           "image_desc": "上傳的圖片將立即顯示在預覽中。"
         }
-      }
+      },
+      "tabs": {
+        "public": "公開題庫",
+        "mine": "我的題庫"
+      },
+      "testbanks": {
+        "create": "建立題庫",
+        "edit": "編輯題庫",
+        "delete": "刪除題庫",
+        "share": "分享",
+        "name": "題庫名稱",
+        "name_placeholder": "例如：物理第三章",
+        "description": "描述",
+        "description_placeholder": "選填描述...",
+        "is_public": "公開",
+        "is_private": "私人",
+        "make_public": "設為公開",
+        "make_private": "設為私人",
+        "problem_count": "{count} 題",
+        "no_testbanks": "尚無題庫，請建立一個開始使用。",
+        "confirm_delete": "確定要刪除此題庫嗎？題目本身不會被刪除。",
+        "delete_error": "刪除題庫失敗",
+        "create_success": "題庫建立成功！",
+        "create_error": "建立題庫失敗",
+        "update_success": "題庫更新成功！",
+        "update_error": "更新題庫失敗",
+        "back": "返回我的題庫",
+        "share_title": "分享「{name}」",
+        "share_desc": "選擇可以存取此題庫的班級",
+        "share_success": "分享設定已更新！",
+        "share_error": "更新分享設定失敗",
+        "no_classrooms": "沒有可分享的班級。"
+      },
+      "select_testbank": "選擇題庫",
+      "select_testbank_placeholder": "請選擇題庫..."
     },
     "students_dashboard": {
       "title": "我的學生",
@@ -587,6 +899,31 @@
     }
   },
   "parent": {
+    "layout": {
+      "profile": "個人資料"
+    },
+    "profile": {
+      "title": "個人資料",
+      "description": "更新你的個人資料。",
+      "change_avatar": "更換照片",
+      "uploading_avatar": "上傳中...",
+      "avatar_upload_error": "上傳照片失敗",
+      "avatar_too_large": "照片大小不能超過 5MB",
+      "name_label": "姓名",
+      "name_placeholder": "你的姓名",
+      "gender_label": "性別",
+      "gender_options": {
+        "male": "男",
+        "female": "女",
+        "other": "其他"
+      },
+      "bio_label": "自我介紹",
+      "bio_placeholder": "向大家介紹你自己...",
+      "save": "儲存個人資料",
+      "saving": "儲存中...",
+      "save_success": "個人資料已更新！",
+      "save_error": "更新個人資料失敗"
+    },
     "dashboard": {
       "title": "家長儀表板",
       "your_students": "您的學生",
@@ -625,6 +962,21 @@
       "no_classrooms": "此學生尚未加入任何教室。",
       "back_to_student_classrooms": "返回學生教室列表",
       "error_loading_performance": "載入表現資料時發生錯誤："
+    },
+    "link_child": {
+      "title": "連結學生帳號",
+      "description": "請提供孩子的姓名與電子郵件，申請家長連結。管理員審核後將完成連結。",
+      "nav_label": "連結學生",
+      "student_name": "學生姓名",
+      "student_name_placeholder": "例如：王小明",
+      "student_email": "學生電子郵件",
+      "student_email_placeholder": "例如：wang{'@'}example.com",
+      "submit": "提交申請",
+      "submit_error": "提交申請失敗",
+      "success_title": "申請已送出！",
+      "success_message": "您的申請已送出，管理員將審核並連結您孩子的帳號。",
+      "link_another": "連結另一位學生",
+      "back_to_dashboard": "返回儀表板"
     }
   },
   "admin": {
@@ -632,12 +984,58 @@
       "title": "管理員",
       "home": "首頁",
       "users": "使用者管理",
-      "linking": "連結",
+      "link_student_parent": "學生家長連結",
+      "ai_logs": "AI 紀錄",
       "logout": "登出"
     },
     "dashboard": {
       "title": "管理員儀表板",
       "welcome": "歡迎，管理員！這是受保護的區域。"
+    },
+    "ai_interaction_logs": {
+      "title": "AI 對話與工具紀錄",
+      "search_placeholder": "搜尋內容、工具、錯誤或對話 ID...",
+      "total_records": "共 {count} 筆紀錄",
+      "event_types": {
+        "user_message": "使用者訊息",
+        "assistant_message": "AI 回覆",
+        "tool_call": "工具呼叫"
+      },
+      "statuses": {
+        "completed": "完成",
+        "aborted": "已中止",
+        "error": "錯誤"
+      },
+      "filters": {
+        "all_events": "所有事件",
+        "all_tools": "所有工具",
+        "all_roles": "所有角色",
+        "all_statuses": "所有狀態",
+        "chat_id": "對話 ID",
+        "clear": "清除篩選"
+      },
+      "table": {
+        "time": "時間",
+        "user": "使用者",
+        "event": "事件",
+        "status": "狀態",
+        "chat": "對話",
+        "content": "內容",
+        "model": "模型",
+        "duration": "耗時 (ms)",
+        "no_results": "沒有找到紀錄"
+      },
+      "detail": {
+        "content": "完整內容與附件",
+        "metadata": "事件資訊",
+        "tool_input": "工具輸入",
+        "tool_output": "工具輸出"
+      },
+      "pagination": {
+        "previous": "上一頁",
+        "next": "下一頁",
+        "page_of": "第 {current} 頁，共 {total} 頁"
+      }
     },
     "link_student": {
       "title": "連結學生與家長",
@@ -651,13 +1049,22 @@
       "confirm_link": "您確定要將此學生連結到家長嗎？",
       "success_link": "成功連結學生與家長！",
       "failed_link": "連結學生與家長失敗",
+      "student_info": "學生資訊",
+      "linked_parents": "已連結的家長",
+      "no_linked_parents": "尚未連結任何家長。",
+      "confirm_unlink": "您確定要解除此家長的連結嗎？",
+      "success_unlink": "成功解除家長連結。",
+      "failed_unlink": "解除家長連結失敗。",
       "table": {
         "avatar": "頭像",
         "name": "姓名",
         "email": "電子郵件",
         "role": "角色",
         "action": "操作",
-        "link": "連結"
+        "link": "連結",
+        "view": "查看",
+        "unlink": "解除連結",
+        "linked_at": "連結時間"
       }
     },
     "pending_parents": {
@@ -694,6 +1101,10 @@
     }
   },
   "components": {
+    "shared_testbanks": {
+      "title": "共享題庫",
+      "empty": "目前尚未有題庫分享給這個班級。"
+    },
     "common": {
       "cancel": "取消",
       "confirm": "確定",
@@ -716,14 +1127,27 @@
       },
       "search": {
         "title": "搜尋題目",
-        "keyword_label": "關鍵字 (標題)",
-        "keyword_placeholder": "搜尋標題...",
+        "keyword_label": "關鍵字",
+        "keyword_placeholder": "搜尋標題或內容...",
+        "subject_label": "科目",
+        "subject_placeholder": "例如：數學、自然...",
+        "chapter_label": "章節",
+        "chapter_placeholder": "例如：第三章...",
+        "grade_label": "年級",
+        "grade_placeholder": "例如：國一、高二...",
+        "difficulty_label": "難度",
+        "difficulty_easy": "簡單",
+        "difficulty_medium": "中等",
+        "difficulty_hard": "困難",
+        "all": "全部",
         "source_label": "來源",
         "source_placeholder": "例如：教科書、考試...",
         "hashtag_label": "標籤",
         "hashtag_placeholder": "例如：數學、物理...",
         "clear": "清除",
-        "search": "搜尋"
+        "search": "搜尋",
+        "per_page": "每頁顯示",
+        "showing_results": "顯示第 {from}-{to} 筆，共 {total} 筆"
       },
       "calendar": {
         "modal_title_edit": "編輯行程",
@@ -731,6 +1155,8 @@
         "event_title_label": "行程標題",
         "event_title_placeholder": "準備數學考試",
         "all_day_label": "整天",
+        "start_date_label": "開始日期",
+        "end_date_label": "結束日期",
         "start_time_label": "開始時間",
         "end_time_label": "結束時間",
         "delete": "刪除",
@@ -814,10 +1240,11 @@
           "title": "AI 格式化工具",
           "hide": "隱藏",
           "show": "顯示",
+          "hint": "將文字轉換為 Markdown 與 LaTeX 數學公式",
           "description": "使用 AI 將您的內容格式化為帶有 LaTeX 數學公式的整潔 Markdown。",
           "description_small": "(將文字轉換為 $...$ 用於行內數學公式，$$...$$ 用於區塊數學公式)",
-          "button_formatting": "格式化中...",
-          "button_format": "格式化目前內容",
+          "formatting": "格式化中...",
+          "format_button": "格式化目前內容",
           "alert_enter_content": "請先輸入一些內容以進行格式化。",
           "alert_failed": "格式化內容失敗。請重試。"
         },
@@ -826,8 +1253,8 @@
           "hide": "隱藏",
           "show": "顯示",
           "description": "使用 AI 根據題目內容自動產生選項和詳解。",
-          "button_generating": "產生中...",
-          "button_generate": "產生選項和詳解",
+          "generating": "產生中...",
+          "generate_button": "產生選項和詳解",
           "alert_enter_content": "請先輸入題目內容。",
           "alert_failed": "產生選項失敗。請重試。"
         },
@@ -836,6 +1263,7 @@
           "hide": "隱藏",
           "show": "顯示",
           "upload_placeholder": "上傳圖片或從剪貼簿貼上 (Ctrl+V) 以擷取文字",
+          "upload_hint": "支援手寫或印刷文字。最大大小 5MB。",
           "remove_image": "移除圖片",
           "button_extracting": "擷取中...",
           "button_extract": "擷取文字至內容",
@@ -843,6 +1271,185 @@
           "alert_failed": "擷取文字失敗。請重試。"
         }
       }
+    }
+  },
+  "chat": {
+    "projects": "專案",
+    "new_project": "新增專案",
+    "edit_project": "編輯專案",
+    "delete_project": "刪除專案",
+    "project_name": "專案名稱",
+    "project_name_placeholder": "例如：數學學習小組",
+    "project_description": "說明",
+    "project_description_placeholder": "關於此專案的備註（僅供自己參考）",
+    "system_prompt": "自訂 AI 指示",
+    "system_prompt_placeholder": "為此專案中的 AI 新增自訂指示...",
+    "system_prompt_hint": "這些指示將會套用到此專案中的每個對話。",
+    "has_instructions": "自訂指示",
+    "unorganized": "未分類",
+    "move_to_project": "移至專案",
+    "confirm_delete_project": "確定要刪除此專案嗎？對話將被移至未分類。",
+    "no_chats_in_project": "尚無對話",
+    "all_chats": "所有對話",
+    "new_chat_short": "新對話",
+    "cancel": "取消",
+    "save": "儲存",
+    "confirm": "確認",
+    "toggle_sidebar": "切換側邊欄"
+  },
+  "shared": {
+    "problem_lists": {
+      "by": "by {name}",
+      "restricted": "無存取權限",
+      "restricted_desc": "您沒有瀏覽此題目的權限。",
+      "not_found": "此清單不存在或分享功能已關閉。",
+      "sign_in_prompt": "登入以存取此清單中更多題目",
+      "accessible_count": "{accessible} / {total} 題可存取",
+      "login": "登入",
+      "practice": "練習"
+    }
+  },
+  "kg": {
+    "nav": "知識圖譜",
+    "title": "講義知識圖譜",
+    "loading": "正在準備圖譜…",
+    "load_error": "無法載入知識圖譜。",
+    "empty": "目前沒有課程圖譜。",
+    "filters": "篩選",
+    "filters_title": "篩選與搜尋",
+    "detail": "詳情",
+    "close": "關閉",
+    "close_sidebar": "關閉側欄",
+    "clear": "清除",
+    "layout_group": "圖形配置",
+    "layout_dagre": "先備階層",
+    "layout_fcose": "力導向",
+    "relayout": "重排",
+    "fit": "全圖",
+    "zoom_in": "放大",
+    "zoom_out": "縮小",
+    "empty_filter": "目前的篩選沒有可顯示的概念。",
+    "nodes_only": "這份資料目前只有概念節點，關係連結尚未加入。",
+    "stats": "{nodes} 個概念 · {edges} 條連結 · {zoom}",
+    "course": "課程",
+    "search": "搜尋",
+    "search_placeholder": "搜尋概念、公式或定義",
+    "match_count": "符合 {count} 個概念，圖上會一併保留相鄰概念。",
+    "no_match": "找不到符合的概念。",
+    "units": "單元",
+    "node_types": "節點類型",
+    "relation_heading": "關係類型",
+    "select_all": "全選",
+    "display": "顯示設定",
+    "hide_inferred": "隱藏推論連結",
+    "hide_inferred_hint": "標準學科依賴，講義沒有明文寫出。",
+    "hide_weak": "隱藏弱證據連結",
+    "hide_weak_hint": "只隱藏鄰近投影片提及名稱的連結。強證據與推論不受影響。",
+    "group_units": "以區塊收納單元",
+    "group_units_hint": "單元外框代表 part_of。關閉後，單元改成節點，並畫出歸屬連線。",
+    "stats_title": "統計",
+    "concepts": "概念",
+    "edges": "連結",
+    "visible_stats": "目前畫面 {nodes} 個概念、{edges} 條連結。",
+    "grouped_note": "單元歸屬以區塊表示。",
+    "excl_part_of": "（不含歸屬）",
+    "evidence_counts": "強證據 {strong} · 弱證據 {weak}",
+    "cross_unit_count": "跨單元連結 {count}",
+    "about": "資料說明",
+    "generated": "資料時間 {time}",
+    "warnings": "已略過 {count} 筆無法對上的資料。",
+    "select_concept": "選擇一個概念",
+    "select_hint": "點圖上的節點或連結，這裡會顯示定義、公式、講義出處，以及相鄰概念。",
+    "practice": {
+      "about": "說明",
+      "tab": "練習題",
+      "expand": "包含先備知識的題目（最多三層）",
+      "empty": "這個知識點沒有你看得到的練習題。",
+      "via_prerequisite": "先備"
+    },
+    "mastery": {
+      "legend": "精熟度",
+      "student": "學生",
+      "none": "只看覆蓋",
+      "untried": "尚未作答",
+      "low": "低於 50%",
+      "mid": "50–80%",
+      "high": "80% 以上"
+    },
+    "coverage": {
+      "count": "已標記 {count} 題"
+    },
+    "review_first": "建議先複習這些先備",
+    "unit": "單元",
+    "unit_count": "這個單元有 {count} 個概念。點名稱可在圖上定位。",
+    "lecture_files": "講義檔案",
+    "pages": "{count} 頁",
+    "definition": "定義",
+    "definition_note": "此處為講義內容的簡要改寫，原文可在下方展開。",
+    "slide_excerpt": "投影片原文",
+    "source": "來源講義",
+    "page": "第 {page} 頁",
+    "open_drive": "在 Google Drive 開啟",
+    "membership": "所屬單元",
+    "outgoing": "連出 · {count}",
+    "incoming": "連入 · {count}",
+    "no_outgoing": "尚無連出的概念。",
+    "no_incoming": "尚無連入的概念。",
+    "this_to": "這個概念 → ",
+    "to_this": " → 這個概念",
+    "note": "備註",
+    "edge": "連結",
+    "from": "起點",
+    "to": "終點",
+    "cross_unit": "跨單元",
+    "edge_hidden": "這條連結目前被篩選隱藏，圖上不會畫出來。",
+    "no_evidence": "這條連結沒有講義引文。",
+    "equations": "公式",
+    "unverified": "待確認",
+    "verified": "已核對",
+    "unverified_hint": "公式未能在投影片擷取文字中核對，請對照原始講義。",
+    "verified_title": "已在投影片文字中找到此公式",
+    "latex": "LaTeX",
+    "open_lecture": "開啟講義",
+    "source_folder": "講義資料夾",
+    "gaps": "缺口分析",
+    "no_gaps": "這門課沒有缺口報告。",
+    "types": {
+      "concept": "概念",
+      "equation": "公式",
+      "law": "定律",
+      "skill": "技能",
+      "unit": "單元"
+    },
+    "relations": {
+      "prerequisite": "先備",
+      "derived_from": "衍生",
+      "applies_to": "應用",
+      "contrasts_with": "對比",
+      "part_of": "歸屬"
+    },
+    "basis": {
+      "grounded": "講義依據",
+      "inferred": "推論",
+      "grounded_kinds": "證據強度"
+    },
+    "evidence": {
+      "targeted_phrase": "強證據",
+      "label_mention_nearby": "弱證據",
+      "source_slide": "來源頁"
+    },
+    "legend": {
+      "title": "圖例",
+      "collapse": "收合",
+      "expand": "展開",
+      "shapes": "形狀 · 類型",
+      "colors": "顏色 · 單元",
+      "lines": "線條 · 關係",
+      "evidence": "證據",
+      "solid": "實線 · 強證據",
+      "dotted": "點線 · 弱證據（鄰近提及）",
+      "dashed": "虛線 · 推論",
+      "zoom_hint": "縮小總覽時會隱藏節點小字，放大後即可看到名稱。"
     }
   }
 }

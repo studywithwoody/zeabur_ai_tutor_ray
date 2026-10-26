@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TeacherProblemForm from "~/components/teacher/ProblemForm.vue";
 import TeacherProblemPreview from "~/components/teacher/ProblemPreview.vue";
+import type { PickedConcept } from "../../../../../lib/kg/picked-concept";
 
 definePageMeta({
   layout: "teacher",
@@ -22,10 +23,14 @@ interface ProblemData {
   correctAnswer: string;
   explanation: string;
   difficulty: "easy" | "medium" | "hard";
+  subject: string;
+  chapter: string;
+  grade: string;
   source: string;
   imageFile: File | null;
   imagePreviewUrl: string | null;
   hashtags: string[];
+  concepts: PickedConcept[];
 }
 
 interface FetchedProblem {
@@ -36,6 +41,9 @@ interface FetchedProblem {
   correctAnswer: string;
   explanation: string | null;
   difficulty: "easy" | "medium" | "hard";
+  subject: string | null;
+  chapter: string | null;
+  grade: string | null;
   source: string | null;
   imageUrl: string | null;
   hashtags: string[] | null;
@@ -48,10 +56,14 @@ const formData = ref<ProblemData>({
   correctAnswer: "",
   explanation: "",
   difficulty: "medium",
+  subject: "",
+  chapter: "",
+  grade: "",
   source: "",
   imageFile: null,
   imagePreviewUrl: null,
   hashtags: [],
+  concepts: [],
 });
 
 const isUploading = ref(false);
@@ -80,10 +92,14 @@ watchEffect(() => {
       correctAnswer: problem.value.correctAnswer,
       explanation: problem.value.explanation || "",
       difficulty: problem.value.difficulty,
+      subject: problem.value.subject || "",
+      chapter: problem.value.chapter || "",
+      grade: problem.value.grade || "",
       source: problem.value.source || "",
       imageFile: null,
       imagePreviewUrl: problem.value.imageUrl || null,
       hashtags: problem.value.hashtags || [],
+      concepts: formData.value.concepts,
     };
   }
 });
@@ -123,10 +139,18 @@ const updateProblem = async () => {
         correctAnswer: formData.value.correctAnswer,
         explanation: formData.value.explanation,
         difficulty: formData.value.difficulty,
+        subject: formData.value.subject,
+        chapter: formData.value.chapter,
+        grade: formData.value.grade,
         source: formData.value.source,
         imageUrl,
         hashtags: formData.value.hashtags,
       },
+    });
+
+    await $fetch(`/api/teacher/problems/${problemId}/concepts`, {
+      method: "PUT",
+      body: { concepts: formData.value.concepts },
     });
 
     alert(useNuxtApp().$i18n.t("teacher.problems.edit.success"));
@@ -160,6 +184,7 @@ const handleCancel = () => {
         <TeacherProblemForm
           v-model="formData"
           :is-uploading="isUploading"
+          :problem-id="problemId"
           :submit-label="$t('teacher.problems.edit.submit')"
           @submit="updateProblem"
           @cancel="handleCancel"

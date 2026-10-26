@@ -111,7 +111,7 @@ const toggleUnderstood = async () => {
       data.value.problems &&
       data.value.problems[currentProblemIndex.value]
     ) {
-      data.value.problems[currentProblemIndex.value].understood =
+      data.value.problems[currentProblemIndex.value]!.understood =
         result.understood;
     }
   } catch (e) {
@@ -143,7 +143,7 @@ const toggleUnderstood = async () => {
     <!-- Review View -->
     <div v-else-if="currentProblem && data" class="space-y-6">
       <HomeworkHeader
-        :title="data.homework.title"
+        :title="data.homework.title ?? ''"
         :current-index="currentProblemIndex"
         :problems="data.problems"
         mode="review"
@@ -154,6 +154,8 @@ const toggleUnderstood = async () => {
         :problem="currentProblem"
         :current-index="currentProblemIndex"
         :total-problems="data.problems.length"
+        :problem-id="String(currentProblem.id)"
+        :is-favorite="currentProblem.isFavorite ?? false"
         @prev="prevProblem"
         @next="nextProblem"
       >
@@ -213,15 +215,11 @@ const toggleUnderstood = async () => {
             }}</span>
           </div>
 
-          <!-- Understood Button -->
-          <div
-            v-if="
-              currentProblem.submissionStatus &&
-              !currentProblem.submissionStatus.correct
-            "
-            class="flex justify-end"
-          >
+          <!-- Actions Row: Add to List + Understood -->
+          <div class="flex justify-between items-center">
+            <StudentAddToListDropdown :problem-id="String(currentProblem.id)" />
             <button
+              v-if="currentProblem.submissionStatus && !currentProblem.submissionStatus.correct"
               class="btn gap-2 transition-all duration-300"
               :class="
                 currentProblem.understood
@@ -278,8 +276,8 @@ const toggleUnderstood = async () => {
             <div class="collapse-content">
               <MarkdownRenderer
                 :content="
-                  currentProblem.explanation ||
-                  $t('student.homeworks.review.no_explanation')
+                  (currentProblem.explanation ??
+                  $t('student.homeworks.review.no_explanation')) as string
                 "
               />
             </div>

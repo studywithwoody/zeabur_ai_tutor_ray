@@ -21,6 +21,44 @@
       "instant_feedback": {
         "title": "Instant Feedback",
         "description": "Get immediate feedback on your answers. Learn from mistakes instantly with AI-powered explanations."
+      },
+      "ai_tutor_chat": {
+        "title": "AI Tutor Chat",
+        "description": "Get streaming, personalized explanations for any problem. The AI recommends relevant problems and materials during your conversation."
+      },
+      "class_materials": {
+        "title": "Class Materials",
+        "description": "Teachers upload and organize learning materials in folders. Students access everything shared to their classrooms in one place."
+      },
+      "scheduling": {
+        "title": "Teacher Scheduling",
+        "description": "Teachers publish available time slots. Students browse teacher profiles and book sessions directly from the platform."
+      }
+    },
+    "roles": {
+      "title": "Built for Everyone",
+      "student": {
+        "title": "Student",
+        "feature_1": "Practice problems from the testbank",
+        "feature_2": "Track wrong answers and save favorites",
+        "feature_3": "Complete and review homework assignments",
+        "feature_4": "Access class materials shared by teachers",
+        "feature_5": "Browse teacher profiles and book sessions"
+      },
+      "teacher": {
+        "title": "Teacher",
+        "feature_1": "Build a problem bank with AI assistance",
+        "feature_2": "Manage classrooms and enrolled students",
+        "feature_3": "Assign homework and track completion scores",
+        "feature_4": "Upload and share class materials",
+        "feature_5": "Publish schedules and manage student bookings"
+      },
+      "parent": {
+        "title": "Parent",
+        "feature_1": "Link your account to your child's student account",
+        "feature_2": "View your child's classroom enrollments",
+        "feature_3": "Monitor homework performance and scores",
+        "feature_4": "Track progress across multiple classrooms"
       }
     }
   },
@@ -50,7 +88,24 @@
   "auth": {
     "title": "Login now!",
     "description": "Access the AI Learning Assistant to start solving problems and getting smart explanations.",
-    "google_login": "Login with Google"
+    "google_login": "Login with Google",
+    "setup_title": "Welcome! Set Up Your Platform",
+    "setup_description": "No accounts exist yet. The first person to sign in will become the platform administrator.",
+    "setup_badge": "Initial Setup",
+    "setup_google_login": "Sign in with Google to become Admin",
+    "tab_login": "Login",
+    "tab_signup": "Sign Up",
+    "name_label": "Name",
+    "name_placeholder": "e.g. John Doe",
+    "email_label": "Email",
+    "email_placeholder": "e.g. john{'@'}example.com",
+    "password_label": "Password",
+    "password_placeholder": "Minimum 8 characters",
+    "login_button": "Login",
+    "signup_button": "Sign Up",
+    "setup_signup_button": "Sign Up as Admin",
+    "or_divider": "OR",
+    "error_generic": "An error occurred. Please try again."
   },
   "login_success": {
     "title": "Login Successful!",
@@ -104,7 +159,8 @@
       "title": "Student",
       "external_links": "External Links",
       "physimhub": "PhysimHub",
-      "testbank": "Testbank",
+      "testbanks": "Testbanks",
+      "testbank": "All Problems",
       "favorites": "Favorites",
       "wrong": "Wrong",
       "classrooms": "Classrooms",
@@ -112,7 +168,78 @@
       "logout": "Logout",
       "menu": "Menu",
       "dashboard": "Dashboard",
-      "materials": "Materials"
+      "materials": "Materials",
+      "teachers": "Reservation",
+      "profile": "Profile",
+      "problem_lists": "Problem Lists"
+    },
+    "profile": {
+      "title": "My Profile",
+      "description": "Update your profile information.",
+      "change_avatar": "Change Photo",
+      "uploading_avatar": "Uploading...",
+      "avatar_upload_error": "Failed to upload photo",
+      "avatar_too_large": "Photo must be under 5MB",
+      "name_label": "Name",
+      "name_placeholder": "Your full name",
+      "gender_label": "Gender",
+      "gender_options": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "bio_label": "About Me",
+      "bio_placeholder": "Tell others about yourself...",
+      "interests_label": "Interests",
+      "interests_placeholder": "e.g. Reading, Music, Sports",
+      "save": "Save Profile",
+      "saving": "Saving...",
+      "save_success": "Profile updated successfully!",
+      "save_error": "Failed to update profile"
+    },
+    "teachers": {
+      "title": "Find Teachers",
+      "description": "Select a teacher to view published availability.",
+      "count": "{count} teachers",
+      "view_availability": "View Availability",
+      "back": "Back to Teachers",
+      "available_slots": "Available Time Slots",
+      "slots_description": "Choose a published slot to request a booking.",
+      "no_slots": "This teacher currently has no available time slots.",
+      "no_teachers": "No teachers are available yet.",
+      "available_count": "{count} available",
+      "available": "Available",
+      "booked": "Booked",
+      "book": "Book",
+      "loading": "Loading...",
+      "load_error": "Failed to load teacher information",
+      "pending": "Pending",
+      "booking_modal": {
+        "title": "Book Time Slot",
+        "note_label": "Note (optional)",
+        "note_placeholder": "Add a message for the teacher...",
+        "confirm": "Confirm Booking",
+        "cancel": "Cancel",
+        "success": "Booking request sent!",
+        "error": "Failed to book slot"
+      },
+      "profile_bio": "About",
+      "profile_teaching_areas": "Teaching Areas",
+      "profile_teaching_experience": "Teaching Experience",
+      "profile_interests": "Interests"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "no_bookings": "No bookings yet.",
+      "status_pending": "Pending",
+      "status_confirmed": "Confirmed",
+      "status_rejected": "Rejected",
+      "status_cancelled": "Cancelled",
+      "cancel": "Cancel Booking",
+      "cancel_confirm": "Are you sure you want to cancel this booking?",
+      "teacher_note": "Teacher's note",
+      "with_teacher": "with {name}",
+      "load_more": "Load older bookings"
     },
     "classrooms": {
       "title": "My Classrooms",
@@ -142,7 +269,8 @@
       "view_hw": "View HW",
       "review_hw": "Review HW",
       "no_homeworks": "No homeworks assigned to this classroom yet.",
-      "error_loading": "Error loading classroom:"
+      "error_loading": "Error loading classroom:",
+      "teacher": "Teacher"
     },
     "homeworks": {
       "title": "My Homework",
@@ -192,7 +320,20 @@
       "ask_ai_button": "Explain this to me",
       "error_loading": "Error loading problem:",
       "understood": "Understood",
-      "mark_as_understood": "Mark as understood"
+      "mark_as_understood": "Mark as understood",
+      "created_by": "by {name}",
+      "difficulty_label": "Difficulty",
+      "subject_label": "Subject",
+      "chapter_label": "Chapter",
+      "grade_label": "Grade",
+      "source_label": "Source",
+      "add_to_favorites": "Add to favorites",
+      "remove_from_favorites": "Remove from favorites"
+    },
+    "testbanks": {
+      "title": "Testbanks",
+      "empty": "No testbanks available to you yet.",
+      "back": "Back to testbanks"
     },
     "chat": {
       "new_chat": "New Chat",
@@ -207,7 +348,34 @@
       "placeholder": "Type your message...",
       "send": "Send",
       "error_response": "Sorry, I encountered an error. Please try again.",
-      "tool_running": "Using tool"
+      "tool_running": "Using tool",
+      "web_search": "Web Search"
+    },
+    "problem_lists": {
+      "title": "My Problem Lists",
+      "create": "Create List",
+      "create_name_label": "List Name",
+      "create_desc_label": "Description (optional)",
+      "create_submit": "Create",
+      "empty": "You have no problem lists yet.",
+      "items": "{count} problems",
+      "view": "View List",
+      "delete": "Delete",
+      "delete_confirm": "Delete this list?",
+      "sharing_enabled": "Sharing On",
+      "sharing_disabled": "Sharing Off",
+      "enable_share": "Enable Sharing",
+      "disable_share": "Disable Sharing",
+      "copy_link": "Copy Link",
+      "copied": "Copied!",
+      "remove_problem": "Remove",
+      "back": "Back to Lists",
+      "edit": "Edit",
+      "save": "Save",
+      "add_to_list": "Add to List",
+      "create_new_list": "New list...",
+      "add_success": "Added to list",
+      "already_in_list": "Already in list"
     }
   },
   "calendar_help": {
@@ -248,6 +416,35 @@
     }
   },
   "teacher": {
+    "profile": {
+      "title": "My Profile",
+      "description": "Update your profile to help students get to know you.",
+      "avatar_label": "Profile Picture",
+      "change_avatar": "Change Photo",
+      "uploading_avatar": "Uploading...",
+      "avatar_upload_error": "Failed to upload photo",
+      "avatar_too_large": "Photo must be under 5MB",
+      "name_label": "Name",
+      "name_placeholder": "Your full name",
+      "gender_label": "Gender",
+      "gender_options": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "bio_label": "Self-Introduction",
+      "bio_placeholder": "Tell students about yourself...",
+      "interests_label": "Interests",
+      "interests_placeholder": "e.g. Reading, Hiking, Music",
+      "teaching_areas_label": "Teaching Areas",
+      "teaching_areas_placeholder": "e.g. Math, Physics, Chemistry",
+      "teaching_experience_label": "Teaching Experience",
+      "teaching_experience_placeholder": "Describe your teaching background...",
+      "save": "Save Profile",
+      "saving": "Saving...",
+      "save_success": "Profile updated successfully!",
+      "save_error": "Failed to update profile"
+    },
     "posts": {
       "back": "Back to Classroom",
       "add_title": "Add New Post",
@@ -325,7 +522,65 @@
       "menu": "Menu",
       "dashboard": "Dashboard",
       "manage_problems": "Manage Problems",
-      "create_problem": "Create Problem"
+      "create_problem": "Create Problem",
+      "ai_chat": "AI Assistant",
+      "schedule": "Schedule",
+      "profile": "Profile"
+    },
+    "bookings": {
+      "title": "Pending Bookings",
+      "no_pending": "No pending bookings.",
+      "confirm": "Confirm",
+      "reject": "Reject",
+      "note_label": "Note (optional)",
+      "note_placeholder": "Add a note...",
+      "confirm_success": "Booking confirmed!",
+      "reject_success": "Booking rejected.",
+      "student_note": "Student's note",
+      "from_student": "from {name}"
+    },
+    "schedule": {
+      "title": "My Schedule",
+      "description": "Manage available time slots and scheduled teaching events.",
+      "modal_create": "New Schedule Event",
+      "modal_edit": "Edit Schedule Event",
+      "form": {
+        "description_label": "Description",
+        "description_placeholder": "Event description...",
+        "start_time": "Start Time",
+        "end_time": "End Time",
+        "mark_available": "Mark as available",
+        "save": "Save Event",
+        "cancel": "Cancel",
+        "error_time_required": "Start and end times are required",
+        "error_time_order": "Start time must be before end time",
+        "error_save_failed": "Failed to save event",
+        "error_delete_failed": "Failed to delete event"
+      },
+      "event": {
+        "available": "Available",
+        "booked": "Booked",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirm_delete": "Are you sure you want to delete this event?"
+      }
+    },
+    "chat": {
+      "new_chat": "New Chat",
+      "placeholder": "Describe the problem you want to create...",
+      "send": "Send",
+      "start_prompt": "Start a conversation to create or discuss problems with AI",
+      "header_ai": "AI Assistant",
+      "header_user": "You",
+      "error_response": "An error occurred, please try again.",
+      "tool_running": "Running tool",
+      "web_search": "Web Search",
+      "upload_image": "Upload Image",
+      "uploading": "Uploading...",
+      "upload_failed": "Image upload failed",
+      "image_too_large": "Image must be under 20MB",
+      "remove_image": "Remove image",
+      "image_attached": "Image attached"
     },
     "classrooms": {
       "title": "Classrooms",
@@ -480,6 +735,23 @@
       "no_problems_found": "No problems found matching your criteria.",
       "confirm_delete": "Are you sure you want to delete this problem?",
       "delete_error": "Failed to delete problem",
+      "concepts": {
+        "label": "Knowledge points",
+        "search": "Search a concept, law, equation, or skill",
+        "suggest": "AI suggest",
+        "suggesting": "Suggesting...",
+        "confirm": "Confirm",
+        "primary": "Primary concept",
+        "course": "Lecture graph: {course}",
+        "no_course": "No lecture graph matches this subject.",
+        "need_subject": "Enter a subject that matches a lecture graph first.",
+        "no_suggestions": "No nearby knowledge points. Save the problem and try again after embeddings exist.",
+        "embedding_unavailable": "The embedding service is unavailable, so suggestions could not be generated.",
+        "suggest_failed": "Could not load suggestions.",
+        "auto_tag": "Auto-tag knowledge points",
+        "auto_tag_result": "Checked {examined} problems, added {inserted} unconfirmed tags, skipped {skipped}.",
+        "auto_tag_failed": "Auto-tag failed."
+      },
       "create": {
         "title": "Create New Problem",
         "success": "Problem created successfully!",
@@ -496,6 +768,12 @@
         "load_error": "Error loading problem:"
       },
       "form": {
+        "subject": "Subject",
+        "subject_placeholder": "e.g. Math, Science",
+        "chapter": "Chapter/Unit",
+        "chapter_placeholder": "e.g. Chapter 3, Quadratic Equations",
+        "grade": "Grade",
+        "grade_placeholder": "e.g. Grade 7, Grade 10",
         "difficulty": "Difficulty",
         "difficulty_options": {
           "easy": "Easy",
@@ -574,7 +852,41 @@
           "image_title": "Image Preview:",
           "image_desc": "Uploaded images will appear in the preview immediately."
         }
-      }
+      },
+      "tabs": {
+        "public": "Public Testbank",
+        "mine": "My Testbanks"
+      },
+      "testbanks": {
+        "create": "Create Testbank",
+        "edit": "Edit Testbank",
+        "delete": "Delete Testbank",
+        "share": "Share",
+        "name": "Testbank Name",
+        "name_placeholder": "e.g. Physics Chapter 3",
+        "description": "Description",
+        "description_placeholder": "Optional description...",
+        "is_public": "Public",
+        "is_private": "Private",
+        "make_public": "Make Public",
+        "make_private": "Make Private",
+        "problem_count": "{count} problems",
+        "no_testbanks": "No testbanks yet. Create one to get started.",
+        "confirm_delete": "Are you sure you want to delete this testbank? Problems will not be deleted.",
+        "delete_error": "Failed to delete testbank",
+        "create_success": "Testbank created!",
+        "create_error": "Failed to create testbank",
+        "update_success": "Testbank updated!",
+        "update_error": "Failed to update testbank",
+        "back": "Back to My Testbanks",
+        "share_title": "Share \"{name}\"",
+        "share_desc": "Select classrooms that can access this testbank",
+        "share_success": "Sharing updated!",
+        "share_error": "Failed to update sharing",
+        "no_classrooms": "No classrooms available to share with."
+      },
+      "select_testbank": "Select Testbank",
+      "select_testbank_placeholder": "Choose a testbank..."
     },
     "students_dashboard": {
       "title": "My Students",
@@ -587,6 +899,31 @@
     }
   },
   "parent": {
+    "layout": {
+      "profile": "Profile"
+    },
+    "profile": {
+      "title": "My Profile",
+      "description": "Update your profile information.",
+      "change_avatar": "Change Photo",
+      "uploading_avatar": "Uploading...",
+      "avatar_upload_error": "Failed to upload photo",
+      "avatar_too_large": "Photo must be under 5MB",
+      "name_label": "Name",
+      "name_placeholder": "Your full name",
+      "gender_label": "Gender",
+      "gender_options": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "bio_label": "About Me",
+      "bio_placeholder": "Tell others about yourself...",
+      "save": "Save Profile",
+      "saving": "Saving...",
+      "save_success": "Profile updated successfully!",
+      "save_error": "Failed to update profile"
+    },
     "dashboard": {
       "title": "Parent Dashboard",
       "your_students": "Your Students",
@@ -625,6 +962,21 @@
       "no_classrooms": "This student is not enrolled in any classrooms.",
       "back_to_student_classrooms": "Back to Student Classrooms",
       "error_loading_performance": "Error loading performance data:"
+    },
+    "link_child": {
+      "title": "Link a Student",
+      "description": "Provide your child's name and email to request a student-parent link. An admin will review and approve your request.",
+      "nav_label": "Link Child",
+      "student_name": "Student Name",
+      "student_name_placeholder": "e.g. John Doe",
+      "student_email": "Student Email",
+      "student_email_placeholder": "e.g. john{'@'}example.com",
+      "submit": "Submit Request",
+      "submit_error": "Failed to submit request",
+      "success_title": "Request Submitted!",
+      "success_message": "Your request has been submitted. An admin will review and link your child's account.",
+      "link_another": "Link Another Student",
+      "back_to_dashboard": "Back to Dashboard"
     }
   },
   "admin": {
@@ -632,12 +984,58 @@
       "title": "Admin",
       "home": "Home",
       "users": "Users",
-      "linking": "Linking",
+      "link_student_parent": "Student-Parent Links",
+      "ai_logs": "AI Logs",
       "logout": "Logout"
     },
     "dashboard": {
       "title": "Admin Dashboard",
       "welcome": "Welcome, Admin! This is a protected area."
+    },
+    "ai_interaction_logs": {
+      "title": "AI Conversations and Tool Logs",
+      "search_placeholder": "Search content, tools, errors, or chat ID...",
+      "total_records": "{count} records",
+      "event_types": {
+        "user_message": "User message",
+        "assistant_message": "AI response",
+        "tool_call": "Tool call"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "aborted": "Aborted",
+        "error": "Error"
+      },
+      "filters": {
+        "all_events": "All events",
+        "all_tools": "All tools",
+        "all_roles": "All roles",
+        "all_statuses": "All statuses",
+        "chat_id": "Chat ID",
+        "clear": "Clear filters"
+      },
+      "table": {
+        "time": "Time",
+        "user": "User",
+        "event": "Event",
+        "status": "Status",
+        "chat": "Chat",
+        "content": "Content",
+        "model": "Model",
+        "duration": "Duration (ms)",
+        "no_results": "No records found"
+      },
+      "detail": {
+        "content": "Full content and attachments",
+        "metadata": "Event details",
+        "tool_input": "Tool input",
+        "tool_output": "Tool output"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page_of": "Page {current} of {total}"
+      }
     },
     "link_student": {
       "title": "Link Student to Parent",
@@ -651,13 +1049,22 @@
       "confirm_link": "Are you sure you want to link this student to the parent?",
       "success_link": "Successfully linked student and parent!",
       "failed_link": "Failed to link student and parent",
+      "student_info": "Student Info",
+      "linked_parents": "Linked Parents",
+      "no_linked_parents": "No parents linked yet.",
+      "confirm_unlink": "Are you sure you want to unlink this parent?",
+      "success_unlink": "Parent unlinked successfully.",
+      "failed_unlink": "Failed to unlink parent.",
       "table": {
         "avatar": "Avatar",
         "name": "Name",
         "email": "Email",
         "role": "Role",
         "action": "Action",
-        "link": "Link"
+        "link": "Link",
+        "view": "View",
+        "unlink": "Unlink",
+        "linked_at": "Linked At"
       }
     },
     "pending_parents": {
@@ -694,6 +1101,10 @@
     }
   },
   "components": {
+    "shared_testbanks": {
+      "title": "Shared Testbanks",
+      "empty": "No testbanks have been shared with this classroom yet."
+    },
     "common": {
       "cancel": "Cancel",
       "confirm": "Confirm",
@@ -716,14 +1127,27 @@
       },
       "search": {
         "title": "Search Problems",
-        "keyword_label": "Keyword (Title)",
-        "keyword_placeholder": "Search by title...",
+        "keyword_label": "Keyword",
+        "keyword_placeholder": "Search by title or content...",
+        "subject_label": "Subject",
+        "subject_placeholder": "e.g. Math, Science...",
+        "chapter_label": "Chapter/Unit",
+        "chapter_placeholder": "e.g. Chapter 3...",
+        "grade_label": "Grade",
+        "grade_placeholder": "e.g. Grade 7...",
+        "difficulty_label": "Difficulty",
+        "difficulty_easy": "Easy",
+        "difficulty_medium": "Medium",
+        "difficulty_hard": "Hard",
+        "all": "All",
         "source_label": "Source",
         "source_placeholder": "e.g. Textbook, Exam...",
         "hashtag_label": "Hashtag",
         "hashtag_placeholder": "e.g. math, physics...",
         "clear": "Clear",
-        "search": "Search"
+        "search": "Search",
+        "per_page": "Per page",
+        "showing_results": "Showing {from}-{to} of {total} results"
       },
       "calendar": {
         "modal_title_edit": "Edit Event",
@@ -731,6 +1155,8 @@
         "event_title_label": "Event Title",
         "event_title_placeholder": "Study for math test",
         "all_day_label": "All Day",
+        "start_date_label": "Start Date",
+        "end_date_label": "End Date",
         "start_time_label": "Start Time",
         "end_time_label": "End Time",
         "delete": "Delete",
@@ -814,10 +1240,11 @@
           "title": "AI Formatting Tool",
           "hide": "Hide",
           "show": "Show",
+          "hint": "Use this tool to quickly format your content into clean Markdown with LaTeX math equations. Just paste your unformatted text and let the AI do the work!",
           "description": "Use AI to format your content into clean Markdown with LaTeX math equations.",
           "description_small": "(Converts text to $...$ for inline math and $$...$$ for block math)",
-          "button_formatting": "Formatting...",
-          "button_format": "Format Current Content",
+          "formatting": "Formatting...",
+          "format_button": "Format Current Content",
           "alert_enter_content": "Please enter some content to format first.",
           "alert_failed": "Failed to format content. Please try again."
         },
@@ -826,8 +1253,8 @@
           "hide": "Hide",
           "show": "Show",
           "description": "Use AI to automatically generate options and explanation based on the problem content.",
-          "button_generating": "Generating...",
-          "button_generate": "Generate Options & Explanation",
+          "generating": "Generating...",
+          "generate_button": "Generate Options & Explanation",
           "alert_enter_content": "Please enter problem content first.",
           "alert_failed": "Failed to generate options. Please try again."
         },
@@ -837,12 +1264,192 @@
           "show": "Show",
           "upload_placeholder": "Upload an image or paste from clipboard (Ctrl+V) to extract text",
           "remove_image": "Remove image",
-          "button_extracting": "Extracting Text...",
-          "button_extract": "Extract Text to Content",
+          "upload_hint": "Supports handwritten or printed text. Max size 5MB.",
+          "extracting": "Extracting Text...",
+          "extract_button": "Extract Text to Content",
           "alert_no_text": "No text found in the image.",
           "alert_failed": "Failed to extract text. Please try again."
         }
       }
+    }
+  },
+  "chat": {
+    "projects": "Projects",
+    "new_project": "New Project",
+    "edit_project": "Edit Project",
+    "delete_project": "Delete Project",
+    "project_name": "Project Name",
+    "project_name_placeholder": "e.g. Math Study Group",
+    "project_description": "Description",
+    "project_description_placeholder": "Notes about this project (for your reference)",
+    "system_prompt": "Custom AI Instructions",
+    "system_prompt_placeholder": "Add custom instructions for the AI in this project...",
+    "system_prompt_hint": "These instructions will be added to every chat in this project.",
+    "has_instructions": "Custom instructions",
+    "unorganized": "Unorganized",
+    "move_to_project": "Move to Project",
+    "confirm_delete_project": "Are you sure you want to delete this project? Chats will be moved to Unorganized.",
+    "no_chats_in_project": "No chats yet",
+    "all_chats": "All Chats",
+    "new_chat_short": "New Chat",
+    "cancel": "Cancel",
+    "save": "Save",
+    "confirm": "Confirm",
+    "toggle_sidebar": "Toggle sidebar"
+  },
+  "shared": {
+    "problem_lists": {
+      "by": "by {name}",
+      "restricted": "Restricted",
+      "restricted_desc": "You don't have access to this problem.",
+      "not_found": "This list is not available or sharing has been disabled.",
+      "sign_in_prompt": "Sign in to access more problems in this list",
+      "accessible_count": "{accessible} / {total} problems accessible",
+      "login": "Sign In",
+      "practice": "Practice"
+    }
+  },
+  "kg": {
+    "nav": "Knowledge graph",
+    "title": "Lecture knowledge graph",
+    "loading": "Preparing the graph…",
+    "load_error": "Could not load the knowledge graph.",
+    "empty": "No course graph is available yet.",
+    "filters": "Filters",
+    "filters_title": "Filter and search",
+    "detail": "Details",
+    "close": "Close",
+    "close_sidebar": "Close sidebar",
+    "clear": "Clear",
+    "layout_group": "Layout",
+    "layout_dagre": "Prerequisites",
+    "layout_fcose": "Force",
+    "relayout": "Relayout",
+    "fit": "Fit",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "empty_filter": "Nothing matches the current filters.",
+    "nodes_only": "This course has concepts only. Relations have not been added.",
+    "stats": "{nodes} concepts · {edges} links · {zoom}",
+    "course": "Course",
+    "search": "Search",
+    "search_placeholder": "Search concepts, equations, or definitions",
+    "match_count": "{count} concepts match. Neighbors stay on the graph.",
+    "no_match": "No matching concept.",
+    "units": "Units",
+    "node_types": "Node types",
+    "relation_heading": "Relations",
+    "select_all": "All",
+    "display": "Display",
+    "hide_inferred": "Hide inferred links",
+    "hide_inferred_hint": "Standard subject dependencies that the slides do not state outright.",
+    "hide_weak": "Hide weak-evidence links",
+    "hide_weak_hint": "Hides links whose only evidence is a nearby mention of the name. Strong evidence and inferences stay.",
+    "group_units": "Group concepts by unit",
+    "group_units_hint": "Unit frames stand in for part_of. Turn this off to draw units as nodes and show membership links.",
+    "stats_title": "Counts",
+    "concepts": "Concepts",
+    "edges": "Links",
+    "visible_stats": "Showing {nodes} concepts and {edges} links.",
+    "grouped_note": "Unit membership is shown as a frame.",
+    "excl_part_of": "(excluding membership)",
+    "evidence_counts": "Strong evidence {strong} · weak evidence {weak}",
+    "cross_unit_count": "Cross-unit links {count}",
+    "about": "About this data",
+    "generated": "Generated {time}",
+    "warnings": "Skipped {count} records that could not be matched.",
+    "select_concept": "Select a concept",
+    "select_hint": "Click a node or a link to see the definition, equations, lecture source, and neighbors.",
+    "practice": {
+      "about": "About",
+      "tab": "Practice",
+      "expand": "Include problems from prerequisites (up to 3 steps)",
+      "empty": "No practice problems you can see for this concept.",
+      "via_prerequisite": "Prerequisite"
+    },
+    "mastery": {
+      "legend": "Mastery",
+      "student": "Student",
+      "none": "Coverage only",
+      "untried": "Not tried",
+      "low": "Under 50%",
+      "mid": "50–80%",
+      "high": "80% or more"
+    },
+    "coverage": {
+      "count": "{count} tagged problems"
+    },
+    "review_first": "Review these prerequisites first",
+    "unit": "Unit",
+    "unit_count": "This unit has {count} concepts. Click a name to focus it.",
+    "lecture_files": "Lecture files",
+    "pages": "{count} pages",
+    "definition": "Definition",
+    "definition_note": "This is a short paraphrase of the lecture. The slide text is below.",
+    "slide_excerpt": "Slide text",
+    "source": "Source lecture",
+    "page": "p. {page}",
+    "open_drive": "Open in Google Drive",
+    "membership": "Unit",
+    "outgoing": "Outgoing · {count}",
+    "incoming": "Incoming · {count}",
+    "no_outgoing": "No outgoing concepts.",
+    "no_incoming": "No incoming concepts.",
+    "this_to": "This concept → ",
+    "to_this": " → this concept",
+    "note": "Note",
+    "edge": "Link",
+    "from": "From",
+    "to": "To",
+    "cross_unit": "Cross-unit",
+    "edge_hidden": "This link is hidden by the current filters.",
+    "no_evidence": "This link has no lecture quotation.",
+    "equations": "Equations",
+    "unverified": "Unverified",
+    "verified": "Checked",
+    "unverified_hint": "This equation was not found in the extracted slide text. Check the original lecture.",
+    "verified_title": "Found in the slide text",
+    "latex": "LaTeX",
+    "open_lecture": "Open lecture",
+    "source_folder": "Lecture folder",
+    "gaps": "Gap report",
+    "no_gaps": "No gap report for this course.",
+    "types": {
+      "concept": "Concept",
+      "equation": "Equation",
+      "law": "Law",
+      "skill": "Skill",
+      "unit": "Unit"
+    },
+    "relations": {
+      "prerequisite": "Prerequisite",
+      "derived_from": "Derived from",
+      "applies_to": "Applies to",
+      "contrasts_with": "Contrasts with",
+      "part_of": "Part of"
+    },
+    "basis": {
+      "grounded": "From the slides",
+      "inferred": "Inferred",
+      "grounded_kinds": "Evidence strength"
+    },
+    "evidence": {
+      "targeted_phrase": "Strong evidence",
+      "label_mention_nearby": "Weak evidence",
+      "source_slide": "Source page"
+    },
+    "legend": {
+      "title": "Legend",
+      "collapse": "Hide",
+      "expand": "Show",
+      "shapes": "Shape · type",
+      "colors": "Color · unit",
+      "lines": "Line · relation",
+      "evidence": "Evidence",
+      "solid": "Solid · strong evidence",
+      "dotted": "Dotted · weak evidence",
+      "dashed": "Dashed · inferred",
+      "zoom_hint": "Node labels hide when the graph is zoomed out."
     }
   }
 }

@@ -1,124 +1,141 @@
 import { db } from "../../../db";
 import { chatHistory } from "../../../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
+import { createChatStream } from "../../utils/ai-chat";
+import {
+  logAssistantChatError,
+  logAssistantChatMessage,
+  logUserChatMessage,
+  reconcileToolCallsFromMessage,
+} from "../../utils/ai-chat-interactions";
+import {
+  getElapsedDurationMs,
+  getInteractionError,
+} from "../../utils/ai-interaction-logger";
+import type { UIMessage } from "ai";
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuthSession(event);
   const user = session.user;
   const body = await readBody(event);
-  const { message, chatId } = body;
+  const {
+    messages: clientMessages,
+    chatId,
+    projectId,
+    classroomId,
+    useWebSearch,
+  } = body as {
+    messages: UIMessage[];
+    chatId: string;
+    projectId?: string;
+    classroomId?: string;
+    useWebSearch?: boolean;
+  };
 
-  if (!message) {
-    throw createError({ statusCode: 400, statusMessage: "Message is required" });
+  if (!clientMessages?.length) {
+    throw createError({ statusCode: 400, statusMessage: "Messages are required" });
+  }
+  if (!chatId) {
+    throw createError({ statusCode: 400, statusMessage: "chatId is required" });
   }
 
-  // Load existing chat history from DB
-  let messages: any[] = [];
-  let currentChatId: string | null = chatId ?? null;
-  let title = "New Chat";
-
-  if (currentChatId) {
-    const chat = await db.query.chatHistory.findFirst({
-      where: eq(chatHistory.id, currentChatId),
-    });
-    if (chat) {
-      messages = chat.messages as any[];
-      title = chat.title || title;
-    }
+  const latestUserMessage = clientMessages.findLast(message => message.role === "user");
+  if (!latestUserMessage) {
+    throw createError({ statusCode: 400, statusMessage: "A user message is required" });
   }
 
-  // Set SSE response headers
-  setHeader(event, "Content-Type", "text/event-stream");
-  setHeader(event, "Cache-Control", "no-cache");
-  setHeader(event, "Connection", "keep-alive");
+  const interactionContext = {
+    chatId,
+    userId: user.id,
+    userRole: "student" as const,
+    classroomId: classroomId ?? null,
+    projectId: projectId ?? null,
+  };
 
-  // Forward to Python microservice streaming endpoint
-  const { aiServiceUrl } = useRuntimeConfig();
-  const pythonRes = await fetch(`${aiServiceUrl}/chat/stream`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message,
-      user_id: user.id,
-      messages,
-      classroom_id: body.classroomId ?? null,
-    }),
+  await logUserChatMessage(interactionContext, latestUserMessage);
+
+  const existingChat = await db.query.chatHistory.findFirst({
+    where: and(eq(chatHistory.id, chatId), eq(chatHistory.studentId, user.id)),
   });
 
-  if (!pythonRes.ok || !pythonRes.body) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: "AI service unavailable",
+  const assistantStartedAt = performance.now();
+  let result;
+  try {
+    result = await createChatStream({
+      messages: clientMessages,
+      chatId,
+      userId: user.id,
+      classroomId: classroomId ?? null,
+      projectId: projectId ?? null,
+      useWebSearch: !!useWebSearch,
     });
+  } catch (error) {
+    await logAssistantChatError(
+      interactionContext,
+      latestUserMessage.id,
+      error,
+      getElapsedDurationMs(assistantStartedAt),
+    );
+    throw error;
   }
 
-  const reader = pythonRes.body.getReader();
-  const decoder = new TextDecoder();
-  let finalContent = "";
-  let buffer = "";
+  const firstUserText = clientMessages
+    .find(m => m.role === "user")
+    ?.parts?.find((p): p is { type: "text"; text: string } => p.type === "text")
+    ?.text ?? "New Chat";
 
-  const stream = new ReadableStream({
-    async pull(controller) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          // Save the completed conversation to DB
-          const userMsg = { role: "user", content: message };
-          const assistantMsg = { role: "assistant", content: finalContent };
-          const updatedMessages = [...messages, userMsg, assistantMsg];
+  let streamError: string | null = null;
+  const response = result.toUIMessageStreamResponse({
+    originalMessages: clientMessages,
+    onError: (error) => {
+      streamError = getInteractionError(error);
+      console.error("Student AI chat stream failed", { chatId, error: streamError });
+      return "An error occurred.";
+    },
+    onFinish: async ({
+      messages: finalMessages,
+      responseMessage,
+      isAborted,
+      finishReason,
+    }) => {
+      const title = existingChat?.title || firstUserText.substring(0, 50) + (firstUserText.length > 50 ? "..." : "");
 
-          if (!title || title === "New Chat") {
-            title = message.substring(0, 50) + (message.length > 50 ? "..." : "");
-          }
+      const persistHistory = existingChat
+        ? db
+            .update(chatHistory)
+            .set({ messages: finalMessages as any, updatedAt: new Date() })
+            .where(eq(chatHistory.id, chatId))
+        : db.insert(chatHistory).values({
+            id: chatId,
+            studentId: user.id,
+            projectId: projectId ?? null,
+            title,
+            messages: finalMessages as any,
+          });
 
-          if (currentChatId) {
-            await db
-              .update(chatHistory)
-              .set({ messages: updatedMessages as any, updatedAt: new Date() })
-              .where(eq(chatHistory.id, currentChatId));
-          } else {
-            const newChat = await db
-              .insert(chatHistory)
-              .values({
-                studentId: user.id,
-                title,
-                messages: updatedMessages as any,
-              })
-              .returning({ id: chatHistory.id });
-            currentChatId = newChat[0].id;
+      const status = isAborted
+        ? "aborted"
+        : streamError || finishReason === "error"
+          ? "error"
+          : "completed";
 
-            // Send the chatId to the frontend as a final SSE event
-            const chatIdEvent = `data: ${JSON.stringify({ type: "chat_id", chatId: currentChatId })}\n\n`;
-            controller.enqueue(new TextEncoder().encode(chatIdEvent));
-          }
-
-          controller.close();
-          break;
-        }
-
-        // Decode and parse SSE lines to intercept 'done' event
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.type === "done") {
-                finalContent = data.content ?? "";
-              }
-            } catch {
-              // ignore malformed lines
-            }
-          }
-        }
-
-        // Forward raw bytes to frontend
-        controller.enqueue(value);
-      }
+      await Promise.all([
+        persistHistory,
+        logAssistantChatMessage(
+          interactionContext,
+          latestUserMessage.id,
+          responseMessage,
+          {
+            status,
+            durationMs: getElapsedDurationMs(assistantStartedAt),
+            finishReason: finishReason ?? null,
+            error: streamError,
+          },
+        ),
+        reconcileToolCallsFromMessage(interactionContext, responseMessage),
+      ]);
     },
   });
 
-  return sendStream(event, stream);
+  return sendWebResponse(event, response);
 });

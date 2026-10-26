@@ -5,17 +5,7 @@ const getBaseURL = () => {
     return window.location.origin;
   }
 
-  // // Server-side logic (SSG, SSR)
-  // const env = process.env.VERCEL_ENV;
-
-  // if (env === "production") return "https://studywithwoody.site";
-  // if (env === "preview") return "https://staging.studywithwoody.site";
-
-  // return "http://localhost:3000";
-  // Server side (SSR, SSG)
-  console.log("SSR BASE URL =", process.env.PUBLIC_BASE_URL);
-
-  return process.env.PUBLIC_BASE_URL || "http://localhost:3000";
+  return process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000";
 };
 
 export const authClient = createAuthClient({
@@ -23,11 +13,4 @@ export const authClient = createAuthClient({
   plugins: [adminClient()],
 });
 
-// export const authClient = createAuthClient({
-//   baseURL: process.client
-//     ? window.location.origin
-//     : (useRuntimeConfig().public.betterAuthUrl as string),
-//   plugins: [adminClient()],
-// });
-
-export const { signIn, signOut, useSession } = authClient;
+export const { signIn, signUp, signOut, useSession } = authClient;

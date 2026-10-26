@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import dotenv from "dotenv";
+import tailwindcss from "@tailwindcss/vite";
 
 // Load .env first
 dotenv.config();
@@ -16,11 +17,64 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    "@nuxtjs/tailwindcss",
     "@nuxtjs/i18n",
     "@nuxtjs/mcp-toolkit",
     "@nuxt/icon",
+    "@vite-pwa/nuxt",
   ],
+  pwa: {
+    registerType: 'prompt',
+    manifest: {
+      name: 'AI tutor',
+      short_name: 'AI tutor',
+      description: 'AI-powered tutoring platform',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      scope: '/',
+      start_url: '/',
+      icons: [
+        {
+          src: 'pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+      ],
+    },
+    workbox: {
+      globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+      navigateFallback: '/offline.html',
+      navigateFallbackDenylist: [/^\/api\//],
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif|webp)$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'image-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 30 * 24 * 60 * 60,
+            },
+          },
+        },
+      ],
+      cleanupOutdatedCaches: true,
+    },
+    devOptions: {
+      enabled: false,
+    },
+  },
   i18n: {
     locales: [
       { code: "en", file: "en.json", name: "English" },
@@ -39,8 +93,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      baseURL: process.env.NUXT_BASE_URL || "",
-      betterAuthUrl: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+      baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
     },
     databaseUrl: process.env.DATABASE_URL,
     authSecret: process.env.BETTER_AUTH_SECRET,
@@ -58,7 +111,47 @@ export default defineNuxtConfig({
     classMaterialsR2SecretAccessKey:
       process.env.CLASS_MATERIALS_R2_SECRET_ACCESS_KEY,
     classMaterialsR2PublicDomain: process.env.CLASS_MATERIALS_R2_PUBLIC_DOMAIN,
-    aiServiceUrl: process.env.AI_SERVICE_URL ?? "http://localhost:8000",
+    aiBaseUrl: process.env.AI_BASE_URL || "https://api.openai.com/v1",
+    aiModel: process.env.AI_MODEL || "gpt-4o",
+    aiApiKey: process.env.AI_API_KEY || process.env.OPENAI_API_KEY,
+    embeddingBaseUrl:
+      process.env.EMBEDDING_BASE_URL || "https://api.openai.com/v1",
+    embeddingModel: process.env.EMBEDDING_MODEL || "text-embedding-3-small",
+    embeddingApiKey:
+      process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY,
+    tavilyApiKey: process.env.TAVILY_API_KEY,
+    mcpStudentGatewayToken: "",
+    mcpTeacherGatewayToken: "",
+  },
+  mcp: {
+    name: "Study With Woody",
+  },
+  nitro: {
+    experimental: {
+      asyncContext: true,
+    },
+  },
+  vite: {
+    plugins: [tailwindcss()],
+    build: {
+      chunkSizeWarningLimit: 750,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes("node_modules/katex") || id.includes("node_modules/marked")) {
+              return "vendor-markdown";
+            }
+            if (
+              id.includes("node_modules/cytoscape") ||
+              id.includes("node_modules/dagre") ||
+              id.includes("node_modules/fuse.js")
+            ) {
+              return "vendor-graph";
+            }
+          },
+        },
+      },
+    },
   },
   css: ["~/assets/css/main.css"],
 });

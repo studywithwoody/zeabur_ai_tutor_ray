@@ -8,11 +8,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Nuxt route middleware only applies to app routes.
   // Server-side MCP endpoints under /mcp are handled by Nitro directly.
 
-  const { data: session } = await authClient.getSession({
-    fetchOptions: {
-      headers: useRequestHeaders(),
-    },
-  });
+  const session = import.meta.server
+    ? await $fetch("/api/auth/get-session", {
+        headers: useRequestHeaders(["cookie"]),
+      }).catch(() => null)
+    : (
+        await authClient.getSession({
+          fetchOptions: {
+            headers: useRequestHeaders(),
+          },
+        })
+      ).data;
 
   const userRole = session?.user?.role;
 

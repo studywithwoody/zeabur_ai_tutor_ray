@@ -4,11 +4,10 @@ import { auth } from "../../../server/utils/auth";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export default defineEventHandler(async (event) => {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || process.env.AI_API_KEY || "",
+  });
   const session = await auth.api.getSession({
     headers: event.headers,
   });

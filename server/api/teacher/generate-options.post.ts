@@ -2,10 +2,6 @@ import OpenAI from "openai";
 import { auth } from "../../../server/utils/auth";
 import { z } from "zod";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const ResponseSchema = z.object({
   choices: z.array(
     z.object({
@@ -17,6 +13,9 @@ const ResponseSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || process.env.AI_API_KEY || "",
+  });
   const session = await auth.api.getSession({
     headers: event.headers,
   });

@@ -1,11 +1,10 @@
 import OpenAI from "openai";
 import { auth } from "../../../server/utils/auth";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export default defineEventHandler(async (event) => {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || process.env.AI_API_KEY || "",
+  });
   const session = await auth.api.getSession({
     headers: event.headers,
   });

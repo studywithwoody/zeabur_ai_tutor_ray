@@ -153,6 +153,7 @@ pnpm start        # Start built server
 pnpm db:generate  # Generate Drizzle migrations
 pnpm db:migrate   # Apply migrations
 pnpm db:studio    # Open Drizzle Studio
+pnpm db:import-kg # Upsert lecture knowledge graphs + concept embeddings
 ```
 
 ---
@@ -280,6 +281,31 @@ The unified table is defined in `db/schema.ts`. After changing its schema, gener
 pnpm db:generate
 pnpm db:migrate
 ```
+
+---
+
+## Lecture knowledge graph
+
+Course graphs live in `data/courses/<id>.json` with an optional `data/courses/<id>.gaps.md` gap report. The import is idempotent: concepts are upserted and missing ones are deactivated (`is_active = false`) rather than deleted. A course's edges are replaced. Re-running the script refreshes embeddings only when the concept text changed.
+
+`kg_courses.subject` is the subject name teachers type on a problem: `AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`. Matching ignores case and extra spaces.
+
+```bash
+docker compose up -d db
+pnpm db:migrate
+pnpm db:import-kg                  # upsert + embeddings
+pnpm db:import-kg -- --dry-run     # parse and report, no writes
+pnpm db:import-kg -- --skip-embeddings
+pnpm db:import-kg -- --course ap-physics-1
+```
+
+Embeddings use the same variables as problem embeddings (`EMBEDDING_API_KEY` or `OPENAI_API_KEY`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL`, 1536 dimensions). If no key is set, the graph still imports and embeddings are skipped.
+
+Signed-in students and teachers (and admins) can open the graph at `/student/knowledge-graph` and `/teacher/knowledge-graph`. The read API is under `/api/kg` and rejects anonymous users and other roles. Graph libraries are split into a `vendor-graph` chunk so the PWA precache limit still holds.
+
+Teachers tag a problem with concepts from the course whose subject matches `problems.subject`. Confirming a tag merges that concept label into `problems.hashtags` and keeps tags that are not concept labels, then refreshes the problem embedding. `POST /api/teacher/kg/auto-tag` writes unconfirmed `ai` rows and does not overwrite an existing pair.
+
+Practice problems for a concept reuse `searchProblems`, so a student only sees problems they are already allowed to open. `expand=1` walks `prerequisite` and `derived_from` edges up to three steps. Mastery colors come from that student's latest submission on each visible tagged problem.
 
 ---
 

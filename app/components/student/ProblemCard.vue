@@ -5,16 +5,19 @@ interface Problem {
   imageUrl: string | null;
 }
 
-defineProps<{
+const props = defineProps<{
   problem: Problem;
   currentIndex: number;
   totalProblems: number;
+  problemId?: string;
+  isFavorite?: boolean;
 }>();
 
 defineEmits<{
   (e: "prev"): void;
   (e: "next"): void;
 }>();
+
 </script>
 
 <template>
@@ -68,9 +71,13 @@ defineEmits<{
     </div>
 
     <div class="card-body pt-12 p-4 md:p-8 md:pt-12">
-      <h2 class="card-title text-2xl justify-center">
-        {{ problem.title }}
-      </h2>
+      <div class="flex items-start justify-between gap-2">
+        <h2 class="card-title text-2xl flex-1 justify-center">
+          {{ problem.title }}
+        </h2>
+        <StudentFavoriteButton v-if="problemId" :problem-id="problemId" :is-favorite="isFavorite" />
+        <StudentAddToListDropdown v-if="problemId" :problem-id="problemId" />
+      </div>
       <MarkdownRenderer :content="problem.content" class="py-4 text-lg" />
 
       <!-- Image -->

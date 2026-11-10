@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Zeabur Deployment
+
+- Project: `AI_tutor` — ID: `699d4f8c99e5a92f233f9077`
+- Nuxt app service (`ai-tutor-new`) — ID: `699d5917f134fffc31ddcc38`
+- PostgreSQL — ID: `699d4f9699e5a92f233f9078`
+- Server: woody's server (Linode Singapore) — `server-697eaea70f19f38d75bddde3`
+- Legacy Zeabur service `ai-service` (`6a02061ddd502f86055af4c6`) is not built from this tree. Upstream removed `packages/ai-service`; chat now runs inside the Nuxt server.
+
+To redeploy the Nuxt app:
+```bash
+npx zeabur@latest deploy --project-id 699d4f8c99e5a92f233f9077 --service-id 699d5917f134fffc31ddcc38 --json
+```
+
 ## Commands
 
 ```bash
@@ -14,6 +27,7 @@ pnpm preview                # Preview production build
 pnpm db:generate            # Generate Drizzle migrations from schema changes
 pnpm db:migrate             # Apply migrations to the database
 pnpm db:studio              # Open Drizzle Studio (database GUI)
+pnpm db:import-kg           # Upsert data/courses knowledge graphs + embeddings
 docker compose up -d        # Start local PostgreSQL
 ```
 
@@ -68,6 +82,7 @@ All tables are in `db/schema.ts`:
 - **Calendar**: `personalEvents`
 - **Role flow**: `roleRequests`, `pendingParent`, `parentStudents`
 - **AI**: `chatHistory` (jsonb `messages` array)
+- **Knowledge graph**: `kgCourses`, `kgUnits`, `kgConcepts` (id `course:slug`, `isActive` instead of hard delete, 1536-d embedding), `kgEdges`, `problemConcepts`. Course JSON + gap reports live in `data/courses/`. Import with `pnpm db:import-kg` (`scripts/import-knowledge-graph.ts`). `kg_courses.subject` matches `problems.subject` case- and space-insensitively (`AP Physics 1`, `AP Microeconomics`, `AP Macroeconomics`). Read API: `server/api/kg/` (student, teacher, or admin only). Pages: `app/pages/student/knowledge-graph.vue`, `app/pages/teacher/knowledge-graph.vue`. UI components: `app/components/kg/`. Teacher tagging: `server/utils/kg-tagging.ts` and `server/api/teacher/problems/[id]/concepts`. Confirmed labels are merged into `problems.hashtags`. Practice problems (`/api/kg/:course/concepts/:slug/problems`) reuse `searchProblems` visibility; `expand=1` walks `prerequisite` and `derived_from` up to three steps. Mastery comes from the student's latest submission (`/api/student/kg/mastery`, teacher view `/api/teacher/students/:id/kg-mastery`). Teachers also see confirmed problem counts per concept.
 
 ### i18n
 
@@ -126,5 +141,6 @@ Required in `.env` or `.env.local` (`.env.local` takes precedence):
 - `GOOGLE_VISION_API_KEY` — for teacher's image-to-problem OCR tool
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_DOMAIN`
 - `CLASS_MATERIALS_R2_*` — same set for the class materials bucket
-- `NUXT_PUBLIC_BASE_URL` — app base URL (used by auth server, auth client SSR, email templates)
 - `COMPOSIO_API_KEY` — Composio API key (from dashboard.composio.dev/settings); required for Gmail/Calendar/Drive integration
+- `EMBEDDING_API_KEY` / `EMBEDDING_BASE_URL` / `EMBEDDING_MODEL` — problem and knowledge-graph embeddings (key falls back to `OPENAI_API_KEY`; model default `text-embedding-3-small`, 1536 dims)
+

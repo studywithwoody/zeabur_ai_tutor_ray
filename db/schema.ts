@@ -10,7 +10,10 @@ import {
   uniqueIndex,
   index,
   vector,
+  uuid,
+  check,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -666,5 +669,143 @@ export const problemListItems = pgTable(
   },
   (t) => ({
     listProblemUnique: uniqueIndex("problem_list_items_unique").on(t.listId, t.problemId),
+  })
+);
+
+export const kgCourses = pgTable(
+  "kg_courses",
+  {
+    id: text("id").primaryKey(),
+    title: text("title").notNull(),
+    // Exact teacher-facing subject, matched to problems.subject case- and space-insensitively.
+    subject: text("subject").notNull(),
+    sourceFolderUrl: text("source_folder_url"),
+    gapReport: text("gap_report"),
+    generatedAt: timestamp("generated_at", { withTimezone: true }),
+    // relations, basis, counts, notes, author — returned with the graph payload.
+    meta: jsonb("meta").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    subjectIdx: index("kg_courses_subject_idx").on(t.subject),
+  })
+);
+
+export const kgUnits = pgTable(
+  "kg_units",
+  {
+    // `${courseId}:${unit}` e.g. ap-physics-1:ch01
+    id: text("id").primaryKey(),
+    courseId: text("course_id")
+      .notNull()
+      .references(() => kgCourses.id),
+    number: integer("number"),
+    name: text("name").notNull(),
+    chapter: text("chapter"),
+    // Original unit node id from the lecture graph, e.g. unit-ch01.
+    slug: text("slug").notNull(),
+    files: jsonb("files").$type<Record<string, unknown>[]>().default([]),
+  },
+  (t) => ({
+    courseIdx: index("kg_units_course_id_idx").on(t.courseId),
+    courseSlugUnique: uniqueIndex("kg_units_course_slug_unique").on(t.courseId, t.slug),
+  })
+);
+
+export const kgConcepts = pgTable(
+  "kg_concepts",
+  {
+    // `${courseId}:${slug}` — stable, unique across courses. Never hard-deleted.
+    id: text("id").primaryKey(),
+    courseId: text("course_id")
+      .notNull()
+      .references(() => kgCourses.id),
+    unitId: text("unit_id").references(() => kgUnits.id),
+    slug: text("slug").notNull(),
+    label: text("label").notNull(),
+    // concept | law | equation | skill, plus unit anchors so part_of edges can use FKs.
+    type: text("type").notNull(),
+    definition: text("definition"),
+    definitionNote: text("definition_note"),
+    slideExcerpt: text("slide_excerpt"),
+    equations: jsonb("equations").$type<string[]>().default([]),
+    equationsVerified: boolean("equations_verified"),
+    sources: jsonb("sources").$type<Record<string, unknown>[]>().default([]),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    embeddingSourceHash: text("embedding_source_hash"),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    courseSlugUnique: uniqueIndex("kg_concepts_course_slug_unique").on(t.courseId, t.slug),
+    courseIdx: index("kg_concepts_course_id_idx").on(t.courseId),
+    unitIdx: index("kg_concepts_unit_id_idx").on(t.unitId),
+    embeddingIdx: index("kg_concepts_embedding_idx").using(
+      "hnsw",
+      t.embedding.op("vector_cosine_ops")
+    ),
+  })
+);
+
+export const kgEdges = pgTable(
+  "kg_edges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    courseId: text("course_id")
+      .notNull()
+      .references(() => kgCourses.id),
+    sourceId: text("source_id")
+      .notNull()
+      .references(() => kgConcepts.id),
+    targetId: text("target_id")
+      .notNull()
+      .references(() => kgConcepts.id),
+    relation: text("relation").notNull(),
+    basis: text("basis").notNull(),
+    note: text("note"),
+    evidence: jsonb("evidence").$type<Record<string, unknown> | null>(),
+    crossUnit: boolean("cross_unit").default(false).notNull(),
+  },
+  (t) => ({
+    endpointsRelationUnique: uniqueIndex("kg_edges_source_target_relation_unique").on(
+      t.sourceId,
+      t.targetId,
+      t.relation
+    ),
+    courseIdx: index("kg_edges_course_id_idx").on(t.courseId),
+    sourceIdx: index("kg_edges_source_id_idx").on(t.sourceId),
+    targetIdx: index("kg_edges_target_id_idx").on(t.targetId),
+  })
+);
+
+export const problemConcepts = pgTable(
+  "problem_concepts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    problemId: text("problem_id")
+      .notNull()
+      .references(() => problems.id, { onDelete: "cascade" }),
+    conceptId: text("concept_id")
+      .notNull()
+      .references(() => kgConcepts.id),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    taggedBy: text("tagged_by").notNull(),
+    confirmed: boolean("confirmed").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    problemConceptUnique: uniqueIndex("problem_concepts_problem_id_concept_id_unique").on(
+      t.problemId,
+      t.conceptId
+    ),
+    conceptIdx: index("problem_concepts_concept_id_idx").on(t.conceptId),
+    problemIdx: index("problem_concepts_problem_id_idx").on(t.problemId),
+    taggedByCheck: check(
+      "problem_concepts_tagged_by_check",
+      sql`${t.taggedBy} in ('manual', 'ai')`
+    ),
   })
 );

@@ -15,7 +15,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
-    "db:backfill-embeddings": "npx tsx scripts/backfill-embeddings.ts"
+    "db:backfill-embeddings": "npx tsx scripts/backfill-embeddings.ts",
+    "db:import-kg": "npx tsx scripts/import-knowledge-graph.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.74",
@@ -35,8 +36,12 @@
     "@types/marked": "^6.0.0",
     "ai": "^6.0.208",
     "better-auth": "^1.4.1",
+    "cytoscape": "^3.34.4",
+    "cytoscape-dagre": "^4.0.1",
+    "cytoscape-fcose": "^2.2.0",
     "dompurify": "^3.3.0",
     "drizzle-orm": "^0.44.7",
+    "fuse.js": "^7.1.0",
     "isomorphic-dompurify": "^2.33.0",
     "katex": "^0.16.25",
     "marked": "^17.0.1",

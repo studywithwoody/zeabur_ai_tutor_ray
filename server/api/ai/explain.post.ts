@@ -2,11 +2,10 @@ import { problems } from "../../../db/schema";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export default defineEventHandler(async (event) => {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || process.env.AI_API_KEY || "",
+  });
   const session = await requireAuthSession(event);
 
   const body = await readBody(event);
@@ -47,7 +46,7 @@ export default defineEventHandler(async (event) => {
     - Enclose block math in double dollar signs: $$ ... $$
     - Enclose inline math in single dollar signs: $ ... $
     - Do NOT use code blocks for math.
-    - Example: "The area of a circle is given by $A = \pi r^2$."
+    - Example: "The area of a circle is given by $A = \\pi r^2$."
 
     Be encouraging and friendly. Keep it concise but thorough.
   `;

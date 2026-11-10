@@ -129,6 +129,7 @@ const askAI = async () => {
             <div v-if="problem.source" class="badge badge-ghost">
               {{ problem.source }}
             </div>
+            <StudentFavoriteButton :problem-id="problemId" :is-favorite="problem.isFavorite ?? false" />
             <StudentAddToListDropdown :problem-id="problemId" />
           </div>
         </div>

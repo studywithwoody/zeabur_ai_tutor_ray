@@ -7,7 +7,11 @@ import { eq, sql } from "drizzle-orm";
 import { admin } from "better-auth/plugins";
 
 const baseURL =
-  process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  process.env.NUXT_PUBLIC_BASE_URL ||
+  process.env.BETTER_AUTH_URL ||
+  (process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : undefined) ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ||
+  "http://localhost:3000";
 
 export const auth = betterAuth({
   baseURL,
@@ -59,6 +63,9 @@ export const auth = betterAuth({
   plugins: [admin()],
   trustedOrigins: [
     baseURL,
+    "https://*.vercel.app",
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_BRANCH_URL ? [`https://${process.env.VERCEL_BRANCH_URL}`] : []),
     ...(process.env.NODE_ENV !== "production"
       ? ["http://localhost:3000"]
       : [])

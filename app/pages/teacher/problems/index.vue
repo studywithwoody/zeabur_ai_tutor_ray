@@ -137,6 +137,35 @@ const deleteTestbank = async (testbank: TestbankItem) => {
 const onTestbankSaved = () => {
   refreshTestbanks();
 };
+
+const autoTagging = ref(false);
+const autoTagVisible = async () => {
+  const ids = problems.value.map((problem: { id: string }) => problem.id);
+  if (ids.length === 0) return;
+  autoTagging.value = true;
+  try {
+    const result = await $fetch<{ examined: number; inserted: number; skipped: number }>(
+      "/api/teacher/kg/auto-tag",
+      {
+        method: "POST",
+        body: {
+          subject: searchParams.value.subject || undefined,
+          problemIds: ids,
+          threshold: 0.35,
+          topK: 5,
+        },
+      }
+    );
+    alert(
+      useNuxtApp().$i18n.t("teacher.problems.concepts.auto_tag_result", result)
+    );
+  } catch (error) {
+    console.error(error);
+    alert(useNuxtApp().$i18n.t("teacher.problems.concepts.auto_tag_failed"));
+  } finally {
+    autoTagging.value = false;
+  }
+};
 </script>
 
 <template>
@@ -157,6 +186,14 @@ const onTestbankSaved = () => {
             >
               {{ $t("teacher.problems.create_hw") }}
             </NuxtLink>
+            <button
+              type="button"
+              class="btn btn-secondary flex-1 md:flex-none"
+              :disabled="autoTagging || problems.length === 0"
+              @click="autoTagVisible"
+            >
+              {{ $t("teacher.problems.concepts.auto_tag") }}
+            </button>
             <NuxtLink
               :to="localePath('/teacher/problems/create')"
               class="btn btn-primary flex-1 md:flex-none"
